@@ -386,15 +386,9 @@ java -XX:+UseG1GC -Xms512m -Xmx512m -Xloggc:G13.log  -XX:+PrintGC -XX:+PrintGCDa
 java -jar -XX:+UseSerialGC -Xmx1g -Xms1g gateway-server-0.0.1-SNAPSHOT.jar
  ```
 
-[压测结果1](./gateway/Serial%20GC/1/index.html)
+压测结果1（其他次数压测结果截图在gateway/Serial GC文件夹下）
 
-[压测结果2](./gateway/Serial%20GC/2/index.html)
-
-[压测结果3](./gateway/Serial%20GC/3/index.html)
-
-[压测结果4](./gateway/Serial%20GC/4/index.html)
-
-[压测结果5](./gateway/Serial%20GC/5/index.html)
+![](gateway/Serial GC/Serial-GC1.png)
 
 | 次数 | RPS  | 平均响应时间（ms） | 最大响应时间（ms） | 最小响应时间（ms） |
 | ---- | ---- | ------------------ | ------------------ | ------------------ |
@@ -416,15 +410,9 @@ RPS最大差值：6756 - 6420= 336
 
 ## 使用并发GC
 
-[压测结果1](./gateway/Parallel%20GC/1/index.html)
+压测结果1（其他次数压测结果截图在gateway/Parallel GC文件夹下）
 
-[压测结果2](./gateway/Parallel%20GC/2/index.html)
-
-[压测结果1](./gateway/Parallel%20GC/3/index.html)
-
-[压测结果1](./gateway/Parallel%20GC/4/index.html)
-
-[压测结果1](./gateway/Parallel%20GC/5/index.html)
+![](gateway/Parallel GC/Parallel-GC1.png)
 
 | 次数 | RPS  | 平均响应时间（ms） | 最大响应时间（ms） | 最小响应时间（ms） |
 | ---- | ---- | ------------------ | ------------------ | ------------------ |
@@ -446,15 +434,9 @@ RPS最大差值：6759- 6053= 706
 
 ## 使用CMS
 
-[压测结果1](./gateway/CMS%20GC/1/index.html)
+压测结果1（其他次数压测结果截图在gateway/CMS GC文件夹下）
 
-[压测结果2](./gateway/CMS%20GC/2/index.html)
-
-[压测结果3](./gateway/CMS%20GC/3/index.html)
-
-[压测结果4](./gateway/CMS%20GC/4/index.html)
-
-[压测结果5](./gateway/CMS%20GC/5/index.html)
+![](gateway/CMS GC/CMS-GC1.png)
 
 | 次数 | RPS  | 平均响应时间（ms） | 最大响应时间（ms） | 最小响应时间（ms） |
 | ---- | ---- | ------------------ | ------------------ | ------------------ |
@@ -476,15 +458,9 @@ RPS最大差值：6687- 6182= 505
 
 ## 使用G1 GC
 
-[压测结果1](./gateway/G1%20GC/1/index.html)
+压测结果1（其他次数压测结果截图在gateway/G1 GC文件夹下）
 
-[压测结果2](./gateway/G1%20GC/2/index.html)
-
-[压测结果3](./gateway/G1%20GC/3/index.html)
-
-[压测结果4](./gateway/G1%20GC/4/index.html)
-
-[压测结果5](./gateway/G1%20GC/5/index.html)
+![](gateway/G1 GC/G1-GC1.png)
 
 | 次数 | RPS  | 平均响应时间（ms） | 最大响应时间（ms） | 最小响应时间（ms） |
 | ---- | ---- | ------------------ | ------------------ | ------------------ |

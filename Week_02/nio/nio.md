@@ -8,9 +8,13 @@
 sb -u http://localhost:8081 -c 20 -N 60
 ```
 
-[测试结果1](./httpServer-test/one-thread-bio/1/index.html)
+测试结果1
 
-[测试结果2](./httpServer-test/one-thread-bio/2/index.html)
+![](httpServer-test/one-thread-bio/one-thread-bio-1.png)
+
+测试结果2
+
+![](httpServer-test/one-thread-bio/one-thread-bio-2.png)
 
 | 次数 | RPS  | 最大响应时间（ms） | 最小响应时间(ms) | 平局响应时间(ms) |
 | ---- | ---- | ------------------ | ---------------- | ---------------- |
@@ -20,9 +24,13 @@ sb -u http://localhost:8081 -c 20 -N 60
 
 ## 多线程BIO
 
-[测试结果1](./httpServer-test/multi-thread-bio/1/index.html)
+测试结果1
 
-[测试结果2](./httpServer-test/multi-thread-bio/2/index.html)
+![](httpServer-test/multi-thread-bio/multi-thread-bio-1.png)
+
+测试结果2
+
+![](httpServer-test/multi-thread-bio/multi-thread-bio-2.png)
 
 | 次数 | RPS   | 最大响应时间（ms） | 最小响应时间(ms) | 平局响应时间(ms) |
 | ---- | ----- | ------------------ | ---------------- | ---------------- |
@@ -32,9 +40,13 @@ sb -u http://localhost:8081 -c 20 -N 60
 
 ## 线程池BIO
 
-[测试结果1](./httpServer-test/thread-pool-bio/1/index.html)
+测试结果1
 
-[测试结果2](./httpServer-test/thread-pool-bio/2/index.html)
+![](httpServer-test/thread-pool-bio/thread-pool-bio-1.png)
+
+测试结果2
+
+![](httpServer-test/thread-pool-bio/thread-pool-bio-2.png)
 
 | 次数 | RPS   | 最大响应时间（ms） | 最小响应时间(ms) | 平局响应时间(ms) |
 | ---- | ----- | ------------------ | ---------------- | ---------------- |
@@ -44,9 +56,13 @@ sb -u http://localhost:8081 -c 20 -N 60
 
 ## Netty
 
-[测试结果1](./httpServer-test/netty/1/index.html)
+测试结果1
 
-[测试结果2](./httpServer-test/netty/2/index.html)
+![](httpServer-test/netty/netty-1.png)
+
+测试结果2
+
+![](httpServer-test/netty/netty-2.png)
 
 | 次数 | RPS     | 最大响应时间（ms） | 最小响应时间(ms) | 平局响应时间(ms) |
 | ---- | ------- | ------------------ | ---------------- | ---------------- |
