@@ -388,7 +388,7 @@ java -jar -XX:+UseSerialGC -Xmx1g -Xms1g gateway-server-0.0.1-SNAPSHOT.jar
 
 压测结果1（其他次数压测结果截图在gateway/Serial GC文件夹下）
 
-![](./gateway/Serial GC/Serial-GC1.png)
+![](./gateway/Serial-GC/Serial-GC1.png)
 
 | 次数 | RPS  | 平均响应时间（ms） | 最大响应时间（ms） | 最小响应时间（ms） |
 | ---- | ---- | ------------------ | ------------------ | ------------------ |
@@ -412,7 +412,7 @@ RPS最大差值：6756 - 6420= 336
 
 压测结果1（其他次数压测结果截图在gateway/Parallel GC文件夹下）
 
-![](./gateway/Parallel GC/Parallel-GC1.png)
+![](./gateway/Parallel-GC/Parallel-GC1.png)
 
 | 次数 | RPS  | 平均响应时间（ms） | 最大响应时间（ms） | 最小响应时间（ms） |
 | ---- | ---- | ------------------ | ------------------ | ------------------ |
@@ -436,7 +436,7 @@ RPS最大差值：6759- 6053= 706
 
 压测结果1（其他次数压测结果截图在gateway/CMS GC文件夹下）
 
-![](./gateway/CMS GC/CMS-GC1.png)
+![](./gateway/CMS-GC/CMS-GC1.png)
 
 | 次数 | RPS  | 平均响应时间（ms） | 最大响应时间（ms） | 最小响应时间（ms） |
 | ---- | ---- | ------------------ | ------------------ | ------------------ |
@@ -460,7 +460,7 @@ RPS最大差值：6687- 6182= 505
 
 压测结果1（其他次数压测结果截图在gateway/G1 GC文件夹下）
 
-![](./gateway/G1 GC/G1-GC1.png)
+![](./gateway/G1-GC/G1-GC1.png)
 
 | 次数 | RPS  | 平均响应时间（ms） | 最大响应时间（ms） | 最小响应时间（ms） |
 | ---- | ---- | ------------------ | ------------------ | ------------------ |
