@@ -16,8 +16,8 @@
 
 有两个实现：
 
-- OkHttp实现，用在前端客户端访问
-- Netty实现，用在网关访问被代理的服务器
+- [OkHttp实现，用在前端客户端访问](https://github.com/cocoZwwang/JAVA-000/tree/main/Week_03/NIO-HomeWork/client/src/main/java/pers/cocoadel/client/okhttp)
+- [Netty实现，用在网关访问被代理的服务器](https://github.com/cocoZwwang/JAVA-000/tree/main/Week_03/NIO-HomeWork/client/src/main/java/pers/cocoadel/client/netty)
 
 ![](client.png)
 
@@ -25,15 +25,15 @@
 
 服务器一共有三个实现：
 
-- 基于BIO实现
-- 基于AIO实现
-- 基于Netty实现
+- [基于BIO实现](https://github.com/cocoZwwang/JAVA-000/tree/main/Week_03/NIO-HomeWork/servers/src/main/java/pers/cocoadel/bio)
+- [基于AIO实现](https://github.com/cocoZwwang/JAVA-000/tree/main/Week_03/NIO-HomeWork/servers/src/main/java/pers/cocoadel/aio)
+- [基于Netty实现](https://github.com/cocoZwwang/JAVA-000/tree/main/Week_03/NIO-HomeWork/servers/src/main/java/pers/cocoadel/netty)
 
 ![](servers.png)
 
 ### Gateway
 
-网关使用Netty实现，分别实现了：
+[网关使用Netty实现，分别实现了：](https://github.com/cocoZwwang/JAVA-000/tree/main/Week_03/NIO-HomeWork/gateway)
 
 - 代理上面三个服务
 - 随机路由
