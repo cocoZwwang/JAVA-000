@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="spring01-stater-test" />
+        <module name="spring-bean" />
+        <module name="profile" />
+        <module name="spring01" />
+        <module name="extensible-xml" />
+        <module name="MyBatis-Learning" />
+        <module name="AOP" />
+        <module name="jdbc" />
+        <module name="spring01-stater" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="school-spring-boot-stater" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

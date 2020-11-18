@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:school-context="http://pres.cocoadel.homework.shool-context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://pres.cocoadel.homework.shool-context
+        http://pres.cocoadel.homework.shool-context.xsd">
+
+
+    <school-context:school id="1" name="信标学院" address="信标"/>
+
+    <school-context:student id="001" name="ruby" age="14" gender="0"/>
+    <school-context:student id="002" name="weiss" age="14" gender="0"/>
+    <school-context:student id="003" name="yang" age="15" gender="0"/>
+    <school-context:student id="004" name="black" age="14" gender="0"/>
+</beans>

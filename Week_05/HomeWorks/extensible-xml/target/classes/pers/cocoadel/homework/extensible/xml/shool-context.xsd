@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns="http://pres.cocoadel.homework.shool-context"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://pres.cocoadel.homework.shool-context">
+
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
+
+    <xsd:complexType name="School">
+        <xsd:attribute name="id" type="xsd:long" use="required"/>
+        <xsd:attribute name="name" type="xsd:string"/>
+        <xsd:attribute name="address" type="xsd:string"/>
+    </xsd:complexType>
+    
+    <xsd:complexType name="Student">
+        <xsd:attribute name="id" type="xsd:long" use="required"/>
+        <xsd:attribute name="name" type="xsd:string"/>
+        <xsd:attribute name="age" type="xsd:int"/>
+        <xsd:attribute name="gender" type="xsd:int"/>
+    </xsd:complexType>
+
+    <xsd:element  name="school" type="School"/>
+    <xsd:element name="student" type="Student"/>
+</xsd:schema>

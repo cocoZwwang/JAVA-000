@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+pers.cocoadel.homework.school.autoconfigure.SchoolAutoConfiguration

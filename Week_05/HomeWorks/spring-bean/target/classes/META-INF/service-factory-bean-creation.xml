@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- 通过ServiceFactoryBean加载对应的Bean -->
+    <bean id="UserFactoryServiceFactoryBean" class="org.springframework.beans.factory.serviceloader.ServiceFactoryBean">
+        <property name="serviceType" value="pers.cocoadel.homework.spring.bean.domain.UserFactory"/>
+    </bean>
+
+</beans>

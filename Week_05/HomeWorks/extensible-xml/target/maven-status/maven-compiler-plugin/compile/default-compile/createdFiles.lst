@@ -1,0 +1,7 @@
+pers\cocoadel\homework\extensible\xml\domain\Klass.class
+pers\cocoadel\homework\extensible\xml\StudentBeanDefinitionParse.class
+pers\cocoadel\homework\extensible\xml\domain\School.class
+pers\cocoadel\homework\extensible\xml\SchoolBeanDefinitionParse.class
+pers\cocoadel\homework\extensible\xml\SchoolNameSpaceHandler.class
+pers\cocoadel\homework\extensible\xml\TestBootstrap.class
+pers\cocoadel\homework\extensible\xml\domain\Student.class
