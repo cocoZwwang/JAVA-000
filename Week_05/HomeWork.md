@@ -10,6 +10,8 @@
 
 - CGLIB
 
+  pers.cocoadel.aop.cglib.TestDemo
+
 ## 2.（必做）写代码实现 Spring Bean 的装配，方式越多越好（XML、Annotation 都可以）, 提交到 Github。
 
 ​	代码在项目路径：HomeWorks\spring-bean
@@ -205,7 +207,7 @@
 
   - 缺点：饿汉式加载，浪费内存。
 
-##  **2.（选做）**maven/spring 的 profile 机制，都有什么用法？ 
+##  2.（选做）maven/spring 的 profile 机制，都有什么用法？ 
 
 - spring profile：条件装配
 
@@ -218,19 +220,21 @@
   - 打包命令：mvn clean package -Pdev会把resources\dev\application.properties 打包到进去
   - 打包命令：mvn clean package -Pprod会把resources\prod\application.properties 打包到进去
 
-##  **3.（选做）**总结 Hibernate 与 MyBatis 的各方面异同点。
+##  3.（选做）总结 Hibernate 与 MyBatis 的各方面异同点。
 
 ##  
 
-##  **4.（必做）**给前面课程提供的 Student/Klass/School 实现自动配置和 Starter。 
+##  4.（必做）给前面课程提供的 Student/Klass/School 实现自动配置和 Starter。 
 
 - HomeWorks\spring01：是拷贝老师的项目，没有做修改。
 - HomeWorks\spring01-stater：是对spring01封装的自动配置和stater模块。
 - HomeWorks\spring01-stater-test：是对上面自动装配的测试。
 
-##  **5.（选做**）学习 MyBatis-generator 的用法和原理，学会自定义 TypeHandler 处理复杂类型。 
+##  5.（选做）学习 MyBatis-generator 的用法和原理，学会自定义 TypeHandler 处理复杂类型。
 
-##  **6.（必做）**研究一下 JDBC 接口和数据库连接池，掌握它们的设计和用法：
+##  
+
+##  6.（必做）研究一下 JDBC 接口和数据库连接池，掌握它们的设计和用法：
 
 使用 JDBC 原生接口，实现数据库的增删改查操作。
 
