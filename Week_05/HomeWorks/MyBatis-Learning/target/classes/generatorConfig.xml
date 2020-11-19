@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+    <context id="H2Tables" targetRuntime="Mybatis3">
+        <plugin type="org.mybatis.generator.plugins.FluentBuilderMethodsPlugin"/>
+        <plugin type="org.mybatis.generator.plugins.ToStringPlugin"/>
+        <plugin type="org.mybatis.generator.plugins.SerializablePlugin"/>
+        <plugin type="org.mybatis.generator.plugins.RowBoundsPlugin"/>
+        <!--数据库连接-->
+        <jdbcConnection driverClass="org.h2.Driver"
+                        connectionURL="jdbc:h2:mem:testdb"
+                        userId="root"
+                        password=""/>
+        <!--数据库实体-->
+        <javaModelGenerator targetPackage="pers.cocoadel.homework.mybatis.domain"
+                            targetProject="./src/main/java">
+            <property name="enableSubPackages" value="true"/>
+            <property name="trimStrings" value="true"/>
+        </javaModelGenerator>
+        <!--XML-->
+        <sqlMapGenerator targetPackage="mapper" targetProject="./src/main/resources">
+            <property name="enableSubPackages" value="true"/>
+        </sqlMapGenerator>
+        <!--mapper-->
+        <javaClientGenerator type="MIXEDMAPPER"
+                             targetPackage="pers.cocoadel.homework.mybatis.mapper"
+                             targetProject="./src/main/java">
+            <property name="enableSubPackages" value="true"/>
+        </javaClientGenerator>
+        <!--表配置-->
+        <table tableName="t_coffee" domainObjectName="CoffeeEntry">
+            <generatedKey column="id" sqlStatement="CALL IDENTITY()" identity="true"/>
+            <columnOverride column="price"
+                            javaType="org.joda.money"
+                            jdbcType="BIGINT"
+                            typeHandler="pers.cocoadel.homework.mybatis.handler.MoneyTypeHandler"/>
+        </table>
+    </context>
+</generatorConfiguration>
