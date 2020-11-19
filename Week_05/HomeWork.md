@@ -232,7 +232,7 @@
 
 ##  5.（选做）学习 MyBatis-generator 的用法和原理，学会自定义 TypeHandler 处理复杂类型。
 
-##  
+ 项目：HomeWorks/MyBatis-Learning
 
 ##  6.（必做）研究一下 JDBC 接口和数据库连接池，掌握它们的设计和用法：
 
