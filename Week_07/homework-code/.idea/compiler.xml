@@ -6,19 +6,12 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="spring01-stater-test" />
-        <module name="spring-bean" />
-        <module name="MyBatis-Learning" />
-        <module name="profile" />
-        <module name="extensible-xml" />
-        <module name="AOP" />
-        <module name="spring01" />
-        <module name="jdbc" />
-        <module name="spring01-stater" />
+        <module name="comm" />
+        <module name="order-demo" />
+        <module name="sharding-jdbc-demo" />
+        <module name="multi-data-source" />
+        <module name="sharding-proxy-demo" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="school-spring-boot-stater" target="1.8" />
-    </bytecodeTargetLevel>
   </component>
 </project>

@@ -24,8 +24,8 @@
     `id` bigint(20) NOT NULL COMMENT '商品ID',
     `name` varchar(255) COLLATE utf8mb4_general_ci NOT NULL COMMENT '商品名称',
     `class_id` bigint(20) DEFAULT NULL COMMENT '商品种类ID',
-    `price` mediumtext COLLATE utf8mb4_general_ci NOT NULL COMMENT '商品价格（分）',
-    `stock` bigint(20) NOT NULL COMMENT '库存',
+    `price` bigint(20) NOT NULL COMMENT '商品价格（分）',
+    `stock` int(20) NOT NULL COMMENT '库存',
     `create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
     `update_time` timestamp NULL DEFAULT NULL COMMENT '修改时间',
     `create_by` bigint(20) DEFAULT NULL COMMENT '创建人',
@@ -53,10 +53,10 @@
   ```my
   CREATE TABLE `orders` (
     `id` bigint(20) NOT NULL COMMENT '订单ID',
-    `user_id` int(11) NOT NULL COMMENT '用户ID',
-    `product_id` int(11) NOT NULL COMMENT '商品ID',
+    `user_id` bigint(11) NOT NULL COMMENT '用户ID',
+    `product_id` bigint(11) NOT NULL COMMENT '商品ID',
     `product_amount` int(11) NOT NULL COMMENT '商品数量',
-    `state` int(11) NOT NULL COMMENT '订单状态',
+    `state` smallint(11) NOT NULL COMMENT '订单状态',
     `create_time` timestamp NULL DEFAULT NULL COMMENT '下单时间',
     `update_time` timestamp NULL DEFAULT NULL COMMENT '修改时间',
     PRIMARY KEY (`id`)
@@ -68,8 +68,8 @@
   ```mysq
   CREATE TABLE `orders_snapshot` (
     `id` bigint(20) NOT NULL COMMENT '订单快照ID',
-    `order_id` int(11) NOT NULL COMMENT '订单ID',
-    `product_id` int(11) NOT NULL COMMENT '商品ID',
+    `order_id` bigint(11) NOT NULL COMMENT '订单ID',
+    `product_id` bigint(11) NOT NULL COMMENT '商品ID',
     `product_name` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '商品名称',
     `product_amount` int(11) DEFAULT NULL COMMENT '商品数量',
     `product_price` bigint(20) DEFAULT NULL COMMENT '商品下单时候的价格',

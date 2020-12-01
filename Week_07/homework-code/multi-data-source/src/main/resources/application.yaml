@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    master:
+      password: suntek
+      username: root
+      url: jdbc:mysql://192.168.3.100:3306/test_db?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+      type: com.zaxxer.hikari.HikariDataSource
+    cluster:
+    - key: slave1
+      password: suntek
+      username: root
+      url: jdbc:mysql://192.168.3.101:3301/test_db?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+      type: com.zaxxer.hikari.HikariDataSource
+
+mybatis:
+  mapper-locations: classpath:mapping/*.xml
+  type-aliases-package: spring.in.action.custom.multi.datasource.domain
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
