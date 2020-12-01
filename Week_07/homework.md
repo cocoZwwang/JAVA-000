@@ -342,6 +342,8 @@ mysql> select * from orders where id > 9999990;
 
 #### 通过JDBC批量插入100W订单数据
 
+代码：[InsertDataBootstrap .class](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_07/homework-code/order-demo/src/main/java/pers/cocoadel/learning/mysql/InsertDataBootstrap.java)
+
 jdbc批量插入代码：
 
  ```java
@@ -577,7 +579,7 @@ mysql> show tables;
 
 ## 2.（必做）读写分离 - 动态切换数据源版本 1.0
 
-项目路径：
+项目路径：[homework-code/multi-data-source](https://github.com/cocoZwwang/JAVA-000/tree/main/Week_07/homework-code/multi-data-source)
 
 ##### 代码验证
 
@@ -696,7 +698,7 @@ Mytbl(id=5, name=slave-custom)
 
 #### 使用sharding-jdbc
 
-项目路径：
+项目路径：[homework-code/sharding-jdbc-demo](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_07/homework-code/sharding-jdbc-demo/target/test-classes/pers/cocoadel/learning/mysql/service/MytblServiceTest.class)
 
 测试代码和上面的几乎一样，先运行insert() 后运行show()：
 
@@ -759,6 +761,8 @@ sharding-jdbc验证读写分离成功
 ## 4.（选做）读写分离 - 数据库中间件版本 3.0
 
 ### 使用sharding-proxy
+
+测试代码：[MytblServiceTest.class](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_07/homework-code/sharding-jdbc-demo/target/test-classes/pers/cocoadel/learning/mysql/service/MytblServiceTest.class)
 
 ##### config-master_slave.yaml配置：
 
