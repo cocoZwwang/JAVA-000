@@ -478,9 +478,9 @@ public interface IdCreator<T> {
   DELIMITER;
   ```
 
-- 代码实现：SequenceIdCreator.java
+- 代码实现：[SequenceIdCreator.java](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_07/homework-code/IdCreator/src/main/java/pers/cocoade/learning/mysql/SequenceIdCreator.java)
 
-- 代码测试：SequenceIdCreatorTest.java
+- 代码测试：[SequenceIdCreatorTest.java](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_07/homework-code/IdCreator/src/test/java/pers/cocoade/learning/mysql/SequenceIdCreatorTest.java)
 
   
 
@@ -497,9 +497,9 @@ public interface IdCreator<T> {
 
 ### SnowFlake
 
-- 代码实现：MagicSnowFlake、MagicSnowFlakeIdCreator
+- 代码实现：[MagicSnowFlake](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_07/homework-code/IdCreator/src/main/java/pers/cocoade/learning/mysql/MagicSnowFlake.java)、[MagicSnowFlakeIdCreator](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_07/homework-code/IdCreator/src/main/java/pers/cocoade/learning/mysql/MagicSnowFlakeIdCreator.java)
 
-- 代码测试：MagicSnowFlakeIdCreatorTest
+- 代码测试：[MagicSnowFlakeIdCreatorTest](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_07/homework-code/IdCreator/src/test/java/pers/cocoade/learning/mysql/MagicSnowFlakeIdCreatorTest.java)
 
   ```java
   第0个SnowFlake id：518849359081635840
