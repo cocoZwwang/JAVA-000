@@ -4,7 +4,7 @@
 
 ## 3、（选做）按自己设计的表结构，插入 1000 万订单模拟数据，测试不同方式的插入效
 
-2、3题放在一起测试。
+**2、3题放在一起测试。**
 
 先通过存储过程生成用户、商品信息，测试插入效率主要通过后面订单表来测试
 
@@ -240,7 +240,7 @@
   +----+--------+----------+---------+-------+---------------------+---------------------+-----------+-----------+
   9 rows in set (0.01 sec)
   ```
-#### 通过Mysql存储过程插入100万订单
+#### 通过Mysql存储过程插入订单
 
 随机日期函数，让订单日期在一年内尽量均匀：
 
@@ -275,7 +275,7 @@ BEGIN
 END
 ```
 
-随机生成100W订单数据：
+##### 随机生成100W订单数据：
 
 ```mysql
 mysql> call insertOrder(0,1000000);
@@ -306,7 +306,7 @@ mysql> select * from orders where id < 10;
 9 rows in set (0.00 sec)
 ```
 
-随机生成1000W数据：
+##### 随机生成1000W数据：
 
 ```mysql
 mysql> call insertOrder(0,10000000);
@@ -340,7 +340,7 @@ mysql> select * from orders where id > 9999990;
 
 
 
-#### 通过JDBC批量插入100W订单数据
+#### 通过JDBC批量插入订单数据
 
 代码：[InsertDataBootstrap .class](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_07/homework-code/order-demo/src/main/java/pers/cocoadel/learning/mysql/InsertDataBootstrap.java)
 
@@ -375,7 +375,7 @@ public void batchSave(List<Order> orders) {
 }
  ```
 
-随机插入100W数据：
+##### 随机插入100W数据：
 
 ```java
 long time = System.currentTimeMillis();
@@ -392,7 +392,7 @@ System.out.printf("插入完成,耗时：%s s\n",(System.currentTimeMillis() - t
 2020-12-01 20:17:22.213  INFO 24368 --- [extShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
 ```
 
-随机插入1000W数据：
+##### 随机插入1000W数据：
 
 ```java
 2020-12-01 21:53:18.424  INFO 25488 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
@@ -410,6 +410,108 @@ System.out.printf("插入完成,耗时：%s s\n",(System.currentTimeMillis() - t
 | Java JDBC | 100W   | 121     |
 | 存储过程  | 1000W  | 557.82  |
 | Java JDBC | 1000W  | 1284    |
+
+
+
+## 6.（选做）尝试自己做一个 ID 生成器（可以模拟 Seq 或 Snowflake）
+
+#### 定义IdCreator接口
+
+```java
+public interface IdCreator<T> {
+    T nextId();
+}
+```
+
+### 模拟sequence
+
+- 创建sequence数据库
+
+  ```java
+  -- name sequence 名称
+  -- current_value 当前 value
+  -- increment 增长步长! 可理解为在数据库中一次读取多少个sequence. 当这些用完后, 下次再从数据库中读取。
+  CREATE TABLE MY_SEQUENCE(`NAME` VARCHAR(50) NOT NULL,current_value INT NOT NULL,increment INT NOT NULL DEFAULT 100, PRIMARY KEY(NAME)) ENGINE=INNODB;
+  ```
+
+- 创建操作函数
+
+  ```mysql
+  -- 获取当前 sequence 的值 (返回当前值,增量)
+  DROP FUNCTION IF EXISTS my_seq_currval;
+  DELIMITER $$
+  CREATE FUNCTION my_seq_currval(seq_name VARCHAR(50)) RETURNS varchar(64)
+  DETERMINISTIC
+  BEGIN
+  	DECLARE retval VARCHAR(64);
+  	SET retval="-999999999,null";
+  	SELECT concat(CAST(current_value AS CHAR),",",CAST(increment AS CHAR)) INTO retval FROM
+  	MY_SEQUENCE WHERE name = seq_name;
+  RETURN retval;
+  END $$
+  DELIMITER;
+  ```
+
+  ```mysql
+  -- 设置sequence值
+  DROP FUNCTION IF EXISTS my_seq_setval;
+  DELIMITER $$
+  CREATE FUNCTION my_seq_setval(seq_name VARCHAR(50),value INTEGER) RETURNS varchar(64)
+  DETERMINISTIC
+  BEGIN
+  	UPDATE MY_SEQUENCE SET current_value = value WHERE name = seq_name;
+  RETURN my_seq_currval(seq_name);
+  END $$
+  DELIMITER;
+  ```
+
+  ```mysql
+  -- 获取下一个sequence值
+  DROP FUNCTION IF EXISTS my_seq_nextval;
+  DELIMITER $$
+  CREATE FUNCTION my_seq_nextval(seq_name VARCHAR(50)) RETURNS varchar(64)
+  DETERMINISTIC
+  BEGIN
+  	UPDATE MY_SEQUENCE SET current_value = current_value + increment WHERE name = seq_name;
+  	RETURN my_seq_currval(seq_name);
+  END $$
+  DELIMITER;
+  ```
+
+- 代码实现：SequenceIdCreator.java
+
+- 代码测试：SequenceIdCreatorTest.java
+
+  
+
+  ```java
+  2020-12-02 17:51:19.273  INFO 20072 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+  2020-12-02 17:51:19.441  INFO 20072 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+  第0个id：101
+  第1个id：102
+  第2个id：103
+  第3个id：104
+  第4个id：105
+  ...
+  ```
+
+### SnowFlake
+
+- 代码实现：MagicSnowFlake、MagicSnowFlakeIdCreator
+
+- 代码测试：MagicSnowFlakeIdCreatorTest
+
+  ```java
+  第0个SnowFlake id：518849359081635840
+  第1个SnowFlake id：518849359081635841
+  第2个SnowFlake id：518849359081635842
+  第3个SnowFlake id：518849359081635843
+  第4个SnowFlake id：518849359081635844
+  第5个SnowFlake id：518849359081635845
+  ...
+  ```
+
+  
 
 # Week07 作业题目（周六）：
 
@@ -698,7 +800,7 @@ Mytbl(id=5, name=slave-custom)
 
 #### 使用sharding-jdbc
 
-项目路径：[homework-code/sharding-jdbc-demo](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_07/homework-code/sharding-jdbc-demo/target/test-classes/pers/cocoadel/learning/mysql/service/MytblServiceTest.class)
+项目路径：[homework-code/sharding-jdbc-demo](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_07/homework-code/sharding-jdbc-demo/src/test/java/pers/cocoadel/learning/mysql/service/MytblServiceTest.java)
 
 测试代码和上面的几乎一样，先运行insert() 后运行show()：
 
@@ -762,7 +864,7 @@ sharding-jdbc验证读写分离成功
 
 ### 使用sharding-proxy
 
-测试代码：[MytblServiceTest.class](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_07/homework-code/sharding-jdbc-demo/target/test-classes/pers/cocoadel/learning/mysql/service/MytblServiceTest.class)
+测试代码：[MytblServiceTest.class](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_07/homework-code/sharding-jdbc-demo/src/test/java/pers/cocoadel/learning/mysql/service/MytblServiceTest.java)
 
 ##### config-master_slave.yaml配置：
 

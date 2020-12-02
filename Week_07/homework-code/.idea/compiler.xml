@@ -6,11 +6,12 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="comm" />
         <module name="order-demo" />
+        <module name="comm" />
         <module name="sharding-jdbc-demo" />
         <module name="multi-data-source" />
         <module name="sharding-proxy-demo" />
+        <module name="IdCreator" />
       </profile>
     </annotationProcessing>
   </component>

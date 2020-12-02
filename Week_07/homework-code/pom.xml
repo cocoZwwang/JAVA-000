@@ -14,6 +14,7 @@
         <module>comm</module>
         <module>sharding-jdbc-demo</module>
         <module>order-demo</module>
+        <module>IdCreator</module>
     </modules>
 
     <properties>

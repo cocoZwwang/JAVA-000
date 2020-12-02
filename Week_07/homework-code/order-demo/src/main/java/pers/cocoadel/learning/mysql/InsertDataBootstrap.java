@@ -28,13 +28,13 @@ public class InsertDataBootstrap implements ApplicationListener<ApplicationReady
     public void onApplicationEvent(ApplicationReadyEvent event) {
 
         long time = System.currentTimeMillis();
-//        for(int i = 0; i < 10; i++){
-//            List<Order> orders = createOrders(i * 1000000 + 1,1000000);
-//            orderDao.batchSave(orders);
-//        }
+        for(int i = 0; i < 10; i++){
+            List<Order> orders = createOrders(i * 1000000 + 1,100000);
+            orderDao.batchSave(orders);
+        }
 
-        List<Order> orders = createOrders(1,10);
-        orderDao.batchSave(orders);
+//        List<Order> orders = createOrders(1,10);
+//        orderDao.batchSave(orders);
         System.out.printf("插入完成,耗时：%s s\n",(System.currentTimeMillis() - time) / 1000);
     }
 
