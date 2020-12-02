@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import pers.cocoadel.learning.mysql.dao.OrderDao;
+import pers.cocoadel.learning.mysql.dao.OrderMonthSalesDao;
 import pers.cocoadel.learning.mysql.domain.Order;
 
 import java.util.ArrayList;
@@ -19,6 +20,9 @@ public class InsertDataBootstrap implements ApplicationListener<ApplicationReady
     @Autowired
     OrderDao orderDao;
 
+    @Autowired
+    OrderMonthSalesDao orderMonthSalesDao;
+
 
     public static void main(String[] args) {
         SpringApplication.run(InsertDataBootstrap.class,args);
@@ -26,15 +30,32 @@ public class InsertDataBootstrap implements ApplicationListener<ApplicationReady
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
+//        insertOrders();
+        statOrders();
+    }
 
+    private void statOrders(){
+        long time = System.currentTimeMillis();
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR,2020);
+        for(int i = 0; i < 12; i++){
+            calendar.set(Calendar.DATE,1);
+            calendar.set(Calendar.MONTH,i);
+            Date startDate = calendar.getTime();
+            calendar.add(Calendar.MONTH,1);
+            calendar.add(Calendar.DATE,-1);
+            Date endDate = calendar.getTime();
+            orderMonthSalesDao.statOrders(startDate,endDate);
+        }
+        System.out.printf("统计完成,耗时：%s s\n",(System.currentTimeMillis() - time) / 1000);
+    }
+
+    private void insertOrders(){
         long time = System.currentTimeMillis();
         for(int i = 0; i < 10; i++){
             List<Order> orders = createOrders(i * 1000000 + 1,100000);
             orderDao.batchSave(orders);
         }
-
-//        List<Order> orders = createOrders(1,10);
-//        orderDao.batchSave(orders);
         System.out.printf("插入完成,耗时：%s s\n",(System.currentTimeMillis() - time) / 1000);
     }
 
@@ -63,5 +84,12 @@ public class InsertDataBootstrap implements ApplicationListener<ApplicationReady
         calendar.set(2020,0,1);
         calendar.add(Calendar.DATE, (int) (Math.random() * 365));
         return  calendar.getTime();
+    }
+
+    /**
+     * 统计每月的销售额，并且存储到中间表
+     */
+    private void statOrderMonthSales() {
+
     }
 }

@@ -4,7 +4,7 @@
 
 ## 3、（选做）按自己设计的表结构，插入 1000 万订单模拟数据，测试不同方式的插入效
 
-**2、3题放在一起测试。**
+***2、3题放在一起测试。***
 
 先通过存储过程生成用户、商品信息，测试插入效率主要通过后面订单表来测试
 
@@ -511,7 +511,241 @@ public interface IdCreator<T> {
   ...
   ```
 
+
+
+## 4.（选做）使用不同的索引或组合，测试不同方式查询效率
+
+## 5.（选做）调整测试数据，使得数据尽量均匀，模拟 1 年时间内的交易，计算一年的销售报表：销售总额，订单数，客单价，每月销售量，前十的商品等等（可以自己设计更多指标）
+
+
+
+***第4 、5题刚好都涉及查询，因此放在一起测试***
+
+
+
+#### 查询：销售总额、订单数、订单用户数。
+
+这里本来销售总额应该结合订单快照表来统计的，因为商品价格会变，但是上面只插入了订单数据，所以这里暂时先关联商品表查询。
+
+- **没添加索引**
+
+  ```my
+  mysql> select
+      -> ROUND(sum(p.price*o.product_amount) / 100,2) as total_amount,
+      -> COUNT(o.id) as order_count,
+      -> COUNT(DISTINCT o.user_id) as custommer_count
+      -> from
+      -> orders as o
+      -> inner join
+      -> products as p
+      -> on o.product_id = p.id
+      -> ;
+  +---------------+-------------+-----------------+
+  | total_amount  | order_count | custommer_count |
+  +---------------+-------------+-----------------+
+  | 7154457525.27 |     1000000 |           10000 |
+  +---------------+-------------+-----------------+
+  1 row in set (1.56 sec)
+  ```
+
+  100W条订单+2000条商品记录，查询耗时1.56秒。
+
+- **添加联合索引**
+
+  目的为了上面三项数据统计能直接走覆盖索引，不需要回表。
+
+  ```mysql
+  mysql> alter table `test_db`.`orders`
+      -> add index `ik_productId_productAmount_userId`(`product_id`,`product_amount`,`user_id`) using btree comment '覆盖统计的单元数据，单元数据的统计走覆盖索引';
+  Query OK, 0 rows affected (15.91 sec)
+  Records: 0  Duplicates: 0  Warnings: 0
+  ```
+
+  再次查询：
+
+  ```mysql
+  mysql> select
+      -> ROUND(sum(p.price*o.product_amount) / 100,2) as total_amount,
+      -> COUNT(o.id) as order_count,
+      -> COUNT(DISTINCT o.user_id) as custommer_count
+      -> from
+      -> orders as o
+      -> inner join
+      -> products as p
+      -> on o.product_id = p.id
+      -> ;
+  +---------------+-------------+-----------------+
+  | total_amount  | order_count | custommer_count |
+  +---------------+-------------+-----------------+
+  | 7154457525.27 |     1000000 |           10000 |
+  +---------------+-------------+-----------------+
+  1 row in set (0.47 sec)
+  ```
+
+  只使用了0.47s，比不使用索引的情况下快了1s。
+
+  查看索引的使用情况：
+
+  ```mysql
+  mysql> explain
+      -> select
+      -> ROUND(sum(p.price*o.product_amount) / 100,2) as total_amount,
+      -> COUNT(o.id) as order_count,
+      -> COUNT(DISTINCT o.user_id) as custommer_count
+      -> from
+      -> orders as o
+      -> inner join
+      -> products as p
+      -> on o.product_id = p.id
+      -> \G
+  *************************** 1. row ***************************
+  ...
+  *************************** 2. row ***************************
+             id: 1
+    select_type: SIMPLE
+          table: o
+     partitions: NULL   
+           type: ref
+  possible_keys: ik_productId_productAmount_userId
+            key: ik_productId_productAmount_userId
+        key_len: 8
+            ref: test_db.p.id
+           rows: 502
+       filtered: 100.00
+          Extra: Using index
+  2 rows in set, 1 warning (0.00 sec)
+  ```
+
+  type: ref 和 key: ik_productId_productAmount_userId表示这次查询是走了上面创建的索引的。
+
+#### 客单价计算
+
+客单价我没有直接在sql里面计算，因为那样会增加sql的复杂度，同时还有可能影响索引的使用。而客单价 = 销售总额 / 消费者数量，可以利用上面的查询结果简单的计算出来。
+
+> perCustomerTransaction = 7154457525.27 / 10000 = 715445.75。
+>
+> 数据造的有点假了，每人每年客单价70+W 。。。
+
+#### 每月的销售额
+
+- **不添加订单时间索引**
+
+  ```mysql
+  mysql> select
+      -> DATE_FORMAT(o.create_time,'%Y-%m') as `month`,ROUND(sum(p.price*o.product_amount) / 100,2) as total_amount
+      -> from
+      -> orders as o
+      -> inner join
+      -> products as p
+      -> on
+      -> o.product_id = p.id
+      -> group by
+      -> `month`;
+  +---------+--------------+
+  | month   | total_amount |
+  +---------+--------------+
+  | 2020-05 | 605598238.35 |
+  | 2020-11 | 588728317.26 |
+  | 2020-10 | 604724538.02 |
+  | 2020-01 | 611216000.79 |
+  | 2020-12 | 597223382.65 |
+  | 2020-02 | 561056708.20 |
+  | 2020-03 | 607218806.64 |
+  | 2020-06 | 591912910.16 |
+  | 2020-09 | 585203516.74 |
+  | 2020-04 | 593318458.66 |
+  | 2020-08 | 607886178.30 |
+  | 2020-07 | 600370469.50 |
+  +---------+--------------+
+  12 rows in set (3.79 sec)
+  ```
+
+  耗时将近4s。
+
+- **添加订单时间索引**
+
+  在上面联合索引基础，添加一个索引列：订单时间。
+
+  ```mysql
+  mysql> ALTER TABLE `test_db`.`orders`
+      -> DROP INDEX `ik_productId_productAmount_userId`,
+      -> ADD INDEX `ik_productId_productAmount_userId_createTime`(`product_id`, `product_amount`, `user_id`, `create_time`) USING BTREE COMMENT '覆盖统计的单元数据，单元数据的统计走覆盖索引';
+  Query OK, 0 rows affected (11.25 sec)
+  Records: 0  Duplicates: 0  Warnings: 0
   
+  mysql> select
+      -> DATE_FORMAT(o.create_time,'%Y-%m') as `month`,ROUND(sum(p.price*o.product_amount) / 100,2) as total_amount
+      -> from
+      -> orders as o
+      -> inner join
+      -> products as p
+      -> on
+      -> o.product_id = p.id
+      -> group by
+      -> `month`;
+  +---------+--------------+
+  | month   | total_amount |
+  +---------+--------------+
+  | 2020-05 | 605598238.35 |
+  | 2020-11 | 588728317.26 |
+  | 2020-10 | 604724538.02 |
+  | 2020-01 | 611216000.79 |
+  | 2020-12 | 597223382.65 |
+  | 2020-02 | 561056708.20 |
+  | 2020-03 | 607218806.64 |
+  | 2020-06 | 591912910.16 |
+  | 2020-09 | 585203516.74 |
+  | 2020-04 | 593318458.66 |
+  | 2020-08 | 607886178.30 |
+  | 2020-07 | 600370469.50 |
+  +---------+--------------+
+  12 rows in set (1.17 sec)
+  ```
+
+  耗时1.17s，响应还是很差，毕竟这才100W数据而且没有其他并发访问的情况下。所以这种分时间段的统计个人觉得还是使用中间表比较好。
+
+- **使用中间表**
+
+  创建月销售额统计表：
+
+  ```mysql
+  mysql> CREATE TABLE `test_db`.`orders_month_total_sales`  (
+      ->   `month_time` timestamp NOT NULL,
+      ->   `total_sales` bigint NULL,
+      ->   PRIMARY KEY (`month_time`)
+      -> );
+  Query OK, 0 rows affected (0.88 sec)
+  ```
+
+  通过定时跑任务的方式把orders统计存入上面中间表
+
+  ```mysql
+  mysql> select
+      -> DATE_FORMAT(month_time,'%Y-%m') as `month`,ROUND(total_sales /100,2) as total_sales
+      -> from
+      -> orders_month_total_sales
+      -> where
+      -> month_time between '2020-01-01' and '2020-12-31';
+  +---------+-------------+
+  | month   | total_sales |
+  +---------+-------------+
+  | 2020-01 |  5929426.60 |
+  | 2020-02 |  5414594.20 |
+  | 2020-03 |  5881710.98 |
+  | 2020-04 |  5742805.80 |
+  | 2020-05 |  5859226.76 |
+  | 2020-06 |  5713111.98 |
+  | 2020-07 |  5817965.41 |
+  | 2020-08 |  5900398.45 |
+  | 2020-09 |  5650297.88 |
+  | 2020-10 |  5859844.76 |
+  | 2020-11 |  5695735.95 |
+  | 2020-12 |  5770223.61 |
+  +---------+-------------+
+  12 rows in set (0.00 sec)
+  ```
+
+  可以看出查询结果非常快，而统计只要一次就行了，而且可以避免了上面那样不断添加索引。
 
 # Week07 作业题目（周六）：
 
@@ -800,7 +1034,9 @@ Mytbl(id=5, name=slave-custom)
 
 #### 使用sharding-jdbc
 
-项目路径：[homework-code/sharding-jdbc-demo](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_07/homework-code/sharding-jdbc-demo/src/test/java/pers/cocoadel/learning/mysql/service/MytblServiceTest.java)
+项目路径：[homework-code/sharding-jdbc-demo](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_07/homework-code/sharding-jdbc-demo/)
+
+测试代码：[MytblServiceTest.java](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_07/homework-code/sharding-jdbc-demo/src/test/java/pers/cocoadel/learning/mysql/service/MytblServiceTest.java)
 
 测试代码和上面的几乎一样，先运行insert() 后运行show()：
 
