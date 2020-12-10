@@ -1,0 +1,28 @@
+server:
+  port: 9090
+spring:
+  application:
+    name: cloud-product
+  datasource:
+    url: jdbc:mysql://192.168.3.24:3306/test1?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: suntek
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:7001/eureka/
+
+ribbon:
+  ReadTimeout: 5000
+  connectTimeout: 5000
+
+log4j:
+  rootLogger: info,console
+  appender:
+    console:
+      PatternLayout:
+        pattern: '%d{HH:mm:ss} [%t] %C{1}: %m%n'

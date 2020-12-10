@@ -1,0 +1,17 @@
+server:
+  port: 7001
+spring:
+  application:
+    name: cloud-eureka-service
+eureka:
+  instance:
+    hostname: localhost
+  server:
+    peerEurekaNodesUpdateIntervalMs: 60000
+    enableSelfPreservation: false
+    evictionIntervalTimerInMs: 5000
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+    service-url:
+      defaultZone: http://localhost:7001/eureka/

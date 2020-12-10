@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="sub-database" />
+        <module name="hmily-demo-order" />
+        <module name="hmily-demo-product" />
+        <module name="hmily-demo-eureka" />
+      </profile>
+    </annotationProcessing>
+  </component>
+</project>

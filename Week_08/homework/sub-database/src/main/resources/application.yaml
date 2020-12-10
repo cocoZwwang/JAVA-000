@@ -1,0 +1,43 @@
+#配置多数据源
+spring:
+  shardingsphere:
+    props:
+      sql:
+        show: true
+    datasource:
+      names: ds0,ds1
+      ds0:
+        type: com.zaxxer.hikari.HikariDataSource
+        jdbc-url: jdbc:mysql://192.168.3.100:3306/test_db?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+        driverClassName: com.mysql.cj.jdbc.Driver
+        username: root
+        password: suntek
+      ds1:
+        type: com.zaxxer.hikari.HikariDataSource
+        jdbc-url: jdbc:mysql://192.168.3.101:3306/test_db?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+        driverClassName: com.mysql.cj.jdbc.Driver
+        username: root
+        password: suntek
+    # 数据分片
+    # 一共2个库，每个库16张表
+    sharding:
+      default-database-strategy:
+        inline:
+          #通过user_id来进行分库
+          sharding-column: user_id
+          algorithm-expression: ds${user_id % 2}
+      tables:
+        orders:
+          actual-data-nodes: ds$->{0..1}.orders$->{0..15}
+          table-strategy:
+            inline:
+              #通过user_id进行分表
+              #因为user_id在分库的时候已经帅选过了，所以这里需要先/2再mod16
+              sharding-column: user_id
+              algorithm-expression: orders$->{(long)(user_id / 2) % 16}
+log4j:
+  rootLogger: info,console
+  appender:
+    console:
+      PatternLayout:
+        pattern: '%d{HH:mm:ss} [%t] %C{1}: %m%n'
