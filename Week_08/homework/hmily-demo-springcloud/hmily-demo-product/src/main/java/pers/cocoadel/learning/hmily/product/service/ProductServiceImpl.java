@@ -31,23 +31,20 @@ public class ProductServiceImpl implements ProductService{
     @Transactional
     @Override
     public void updateProductStock(Order order) {
+        Product product = productDao.selectOne(order.getProductId());
+        //TODO 存在多事务增量问题，之后再加个乐观锁去解决。
+        product.setStock(product.getStock() - order.getProductAmount());
+        productDao.update(product);
+        //保存更新前的Order数据，用于cancel
+        //最好使用持久化存储，这里demo使用内存
+        map.put(order.getId().toString(),order);
         log.info("updateProduct try!");
     }
 
     @Transactional
     public void updateProductConfrim(Order order){
-        //如果orderId作为key不存在表示这是第一次Confrim
-        if(!map.containsKey(order.getId().toString())){
-            //保存更新前的Order数据，用于cancel
-            //最好使用持久化存储，这里demo使用内存
-            map.put(order.getId().toString(),order);
-            Product product = productDao.selectOne(order.getProductId());
-            //TODO 存在多事务增量问题，之后再加个乐观锁去解决。
-            product.setStock(product.getStock() - order.getProductAmount());
-            productDao.update(product);
-            //成功后删除key
-            map.remove(order.getId().toString());
-        }
+        //成功后删除key
+        map.remove(order.getId().toString());
         log.info("updateProduct Confrim!");
     }
 
