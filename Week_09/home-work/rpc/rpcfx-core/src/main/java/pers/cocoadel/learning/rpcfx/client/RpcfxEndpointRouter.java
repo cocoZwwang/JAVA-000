@@ -1,4 +1,5 @@
 package pers.cocoadel.learning.rpcfx.client;
 
-public class RpcfxEndpointRouter {
+public interface RpcfxEndpointRouter {
+    String route(String rpcDescribe);
 }

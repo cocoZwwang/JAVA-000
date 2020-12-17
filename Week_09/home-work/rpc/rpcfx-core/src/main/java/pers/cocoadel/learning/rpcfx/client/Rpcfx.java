@@ -13,19 +13,19 @@ import pers.cocoadel.learning.rpcfx.api.RpcfxResponse;
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 
 public final class Rpcfx {
 
     static {
-        ParserConfig.getGlobalInstance().addAccept("io.kimmking");
+        ParserConfig.getGlobalInstance().addAccept("pers.cocoade.learning");
     }
 
     public static <T> T create(final Class<T> serviceClass, final String url) {
 
         // 0. 替换动态代理 -> AOP
-        return (T) Proxy.newProxyInstance(Rpcfx.class.getClassLoader(), new Class[]{serviceClass}, new RpcfxInvocationHandler(serviceClass, url));
-
+//        return (T) Proxy.newProxyInstance(Rpcfx.class.getClassLoader(), new Class[]{serviceClass}, new RpcfxInvocationHandler(serviceClass, url));
+        //使用CGLIB
+        return (T) new RpcfxInterceptor(url,serviceClass).getInstance();
     }
 
     public static class RpcfxInvocationHandler implements InvocationHandler {
@@ -54,7 +54,7 @@ public final class Rpcfx {
 
             // 这里判断response.status，处理异常
             // 考虑封装一个全局的RpcfxException
-
+            System.out.println(response.getResult().toString());
             return JSON.parse(response.getResult().toString());
         }
 

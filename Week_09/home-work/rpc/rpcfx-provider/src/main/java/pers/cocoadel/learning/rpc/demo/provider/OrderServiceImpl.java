@@ -1,7 +1,8 @@
-package io.kimmking.rpcfx.demo.provider;
+package pers.cocoadel.learning.rpc.demo.provider;
 
-import io.kimmking.rpcfx.demo.api.Order;
-import io.kimmking.rpcfx.demo.api.OrderService;
+
+import pers.cocoade.learning.rpc.api.Order;
+import pers.cocoade.learning.rpc.api.OrderService;
 
 public class OrderServiceImpl implements OrderService {
 

@@ -1,7 +1,8 @@
-package io.kimmking.rpcfx.demo.provider;
+package pers.cocoadel.learning.rpc.demo.provider;
 
-import io.kimmking.rpcfx.demo.api.User;
-import io.kimmking.rpcfx.demo.api.UserService;
+
+import pers.cocoade.learning.rpc.api.User;
+import pers.cocoade.learning.rpc.api.UserService;
 
 public class UserServiceImpl implements UserService {
 

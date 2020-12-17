@@ -1,0 +1,13 @@
+pers\cocoadel\learning\http\HttpResponseFuture.class
+pers\cocoadel\learning\http\HttpResponse$Builder.class
+pers\cocoadel\learning\http\HttpResponse$1.class
+pers\cocoadel\learning\http\HttpRequest$HttpRequestBuilder.class
+pers\cocoadel\learning\http\HttpResponseBody.class
+pers\cocoadel\learning\http\HttpUrlInfo.class
+pers\cocoadel\learning\http\HttpRequest.class
+pers\cocoadel\learning\http\handler\HttpChannelPool.class
+pers\cocoadel\learning\http\NettyHttpClient$HttpServerInfo.class
+pers\cocoadel\learning\http\handler\HttpFutureHandler.class
+pers\cocoadel\learning\http\NettyHttpClient$1.class
+pers\cocoadel\learning\http\HttpResponse.class
+pers\cocoadel\learning\http\NettyHttpClient.class
