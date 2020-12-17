@@ -1,4 +1,4 @@
-package pers.cocoadel.learning.http.handler;
+package pers.cocoadel.learning.http;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;

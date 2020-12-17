@@ -1,4 +1,4 @@
-package pers.cocoadel.learning.http.handler;
+package pers.cocoadel.learning.http;
 
 import io.netty.channel.Channel;
 
