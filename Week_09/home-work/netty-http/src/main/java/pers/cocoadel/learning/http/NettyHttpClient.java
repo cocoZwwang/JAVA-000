@@ -96,6 +96,25 @@ public class NettyHttpClient {
         }
     }
 
+    /**
+     * Netty真正发送数据的方法
+     */
+    private HttpResponseFuture requestForFuture(ChannelFuture channelFuture, FullHttpRequest request) {
+        HttpResponseFuture future = new HttpResponseFuture();
+        //动态添加HttpFutureHandler到当前Channel pipeline中
+        channelFuture.channel().pipeline().addLast("HttpFutureHandler", new HttpFutureHandler(future));
+        //判断当前Channel是否可写
+        if(channelFuture.channel().isActive() && channelFuture.channel().isWritable()){
+            channelFuture.channel().writeAndFlush(request);
+        }else{
+            future.setFailure(new RuntimeException("http channel is unWriteable!"));
+        }
+        return future;
+    }
+
+    /**
+     * 用户请求转换成FullHttpRequest
+     */
     private FullHttpRequest mapToFullHttpRequest(HttpRequest request, HttpUrlInfo httpUrlInfo, Channel channel) {
         ByteBuf byteBuf = channel.alloc().buffer(request.getContent() == null ? 0 : request.getContent().length);
         if (request.getContent() != null && request.getContent().length > 0) {
@@ -116,13 +135,5 @@ public class NettyHttpClient {
                 .set(HttpHeaderNames.CONTENT_TYPE, "application/json; charset=utf-8")
                 .set(HttpHeaderNames.CONTENT_LENGTH, fullHttpRequest.content().readableBytes());
         return fullHttpRequest;
-    }
-
-
-    private HttpResponseFuture requestForFuture(ChannelFuture channelFuture, FullHttpRequest request) {
-        HttpResponseFuture future = new HttpResponseFuture();
-        channelFuture.channel().pipeline().addLast("HttpFutureHandler", new HttpFutureHandler(future));
-        channelFuture.channel().writeAndFlush(request);
-        return future;
     }
 }
