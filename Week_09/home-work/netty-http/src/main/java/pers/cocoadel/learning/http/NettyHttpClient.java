@@ -92,7 +92,7 @@ public class NettyHttpClient {
     }
 
     /**
-     * 真心发起请求的方法
+     * 真正发起请求的方法
      * 返回一个future
      */
     private HttpResponseFuture executorForFuture(HttpRequest request) {
