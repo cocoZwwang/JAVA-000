@@ -18,13 +18,13 @@
 
   - 主要的NettyHandler处理链：
 
-    - WriteIdleStateHandler：一定时间内（默认60秒）没有请求发送，关闭连接。
+    - [WriteIdleStateHandler](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_09/home-work/netty-http/src/main/java/pers/cocoadel/learning/http/handler/WriteIdleStateHandler.java)：一定时间内（默认60秒）没有请求发送，关闭连接。
 
-    - HttpRestHandler：负责发送请求和处理返回，和一次Http会话动态绑定。需要发送请求时候，动态add到Channel Pipeline中，通过addhandler回调发送消息，收到回复后处理返回结果并且动态删除。
+    - [HttpRestHandler](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_09/home-work/netty-http/src/main/java/pers/cocoadel/learning/http/handler/HttpRestHandler.java)：负责发送请求和处理返回，和一次Http会话动态绑定。需要发送请求时候，动态add到Channel Pipeline中，通过addhandler回调发送消息，收到回复后处理返回结果并且动态删除。
 
-    - HttpRequestToFullRequestHandler：用户请求转换成FullHttpRequest
+    - [HttpRequestToFullRequestHandler](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_09/home-work/netty-http/src/main/java/pers/cocoadel/learning/http/handler/HttpRequestToFullRequestHandler.java)：用户请求转换成FullHttpRequest
 
-    - DefaultHttpChannelPool：连接池，尝试通过监听netty内置事件来记录活动连接，实现连接池，但是还没写好，有bug，而且感觉API就没设计好，后面要继续修改。
+    - [DefaultHttpChannelPool](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_09/home-work/netty-http/src/main/java/pers/cocoadel/learning/http/handler/DefaultHttpChannelPool.java)：连接池，尝试通过监听netty内置事件来记录活动连接，实现连接池，但是还没写好，有bug，而且感觉API就没设计好，后面要继续修改。
 
   - 总之还有很多Bug和没写完的地方，只能后面慢慢完善。
 
@@ -36,7 +36,7 @@
 - 用户 B 的美元账户和人民币账户都在 B 库，使用 7 人民币兑换 1 美元 ;
 - 设计账户表，冻结资产表，实现上述两个本地事务的分布式事务。
 
-表设计：test.sql
+表设计：[test.sql](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_09/home-work/dubbo-hmily-tcc/test.sql)
 
-dubbo+hmily实现TCC：TransactionServiceAImpl#testTCCTransaction(TransactionBill)
+dubbo+hmily实现TCC：[TransactionServiceAImpl#testTCCTransaction(TransactionBill)](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_09/home-work/dubbo-hmily-tcc/Server-A/src/main/java/pers/cocoade/learning/dubbo/a/service/TransactionServiceAImpl.java)
 
