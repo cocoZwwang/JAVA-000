@@ -37,15 +37,10 @@ public class HttpRestHandler extends SimpleChannelInboundHandler<FullHttpRespons
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
         super.handlerAdded(ctx);
         if(ctx.channel().isActive() && ctx.channel().isWritable()){
-            //发送HTTP_STAGE_SENDING_EVENT事件
+            //发送HTTP_STAGE_SENDING_EVENT事件（向前传递）
             ctx.fireUserEventTriggered(HTTP_STAGE_SENDING_EVENT);
-            String json = new String(request.getContent());
-//            System.out.println("++++++++++++++++++++++++++++");
-//            System.out.println(json);
             ChannelFuture writeFuture = ctx.write(request);
             writeFuture.addListener(f -> {
-                //发送HTTP_STAGE_WAITING_EVENT事件
-//                System.out.println("++++++++++++++++++++++++++++HTTP_STAGE_WAITING_EVENT");
                 ctx.fireUserEventTriggered(HTTP_STAGE_WAITING_EVENT);
             });
             ctx.flush();
@@ -67,9 +62,7 @@ public class HttpRestHandler extends SimpleChannelInboundHandler<FullHttpRespons
                 .message(msg.status().toString())
                 .build();
         future.setSuccess(httpResponse);
-//        System.out.println("////////////////////////////" + new String(httpResponse.getHttpResponseBody().getBody()));
-        //发送HTTP_STAGE_COMPLETED_EVENT事件
-//        ctx.channel().pipeline().fireUserEventTriggered(HttpStageEvent.HTTP_STAGE_COMPLETED_EVENT);
+        //HTTP_STAGE_COMPLETED_EVENT事件（向后传递）
         ctx.fireUserEventTriggered(HttpStageEvent.HTTP_STAGE_COMPLETED_EVENT);
         //一次Http会话结束，移除当前Handler对象
         ctx.pipeline().remove(this);
