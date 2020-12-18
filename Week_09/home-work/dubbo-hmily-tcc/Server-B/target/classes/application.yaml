@@ -1,0 +1,26 @@
+server:
+  port: 9090
+spring:
+  application:
+    name: Server-B
+  datasource:
+    url: jdbc:mysql://192.168.3.24:3306/test2?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: suntek
+
+dubbo:
+  scan:
+    base-packages: pers.cocoade.learning.dubbo
+  protocol:
+    name: dubbo
+    port: 12345
+  registry:
+    address: zookeeper://localhost:2181
+  metadata-report:
+    address: zookeeper://localhost:2181
+
+hmily:
+  support:
+    rpc:
+      annotation: true

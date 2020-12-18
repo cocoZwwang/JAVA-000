@@ -7,10 +7,13 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="rpcfx-provider" />
-        <module name="rpcfx-core" />
+        <module name="Server-B" />
         <module name="rpcfx-comsumer" />
+        <module name="Server-API" />
+        <module name="rpcfx-core" />
+        <module name="Server-A" />
         <module name="netty-http" />
+        <module name="rpcfx-provider" />
         <module name="rpcfx-demo-api" />
       </profile>
     </annotationProcessing>

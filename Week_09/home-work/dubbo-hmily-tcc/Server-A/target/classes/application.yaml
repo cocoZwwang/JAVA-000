@@ -1,0 +1,22 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: Server-A
+  datasource:
+    url: jdbc:mysql://192.168.3.24:3306/test1?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: suntek
+dubbo:
+  scan:
+    base-packages: io.kimmking.dubbo.demo.provider
+  registry:
+    address: zookeeper://localhost:2181
+  metadata-report:
+    address: zookeeper://localhost:2181
+
+hmily:
+  support:
+    rpc:
+      annotation: true
