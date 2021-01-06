@@ -6,10 +6,14 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.exceptions.JedisExhaustedPoolException;
-
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.NoSuchElementException;
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 public class JedisOperator implements RedisOperator {
@@ -231,5 +235,25 @@ public class JedisOperator implements RedisOperator {
             }
         } while (System.currentTimeMillis() < endTime);
         return null;
+    }
+
+    private String readScript(String scriptPath) {
+        String classFilePath = this.getClass().getResource("/").getPath();
+        String packagePath = this.getClass().getPackage().getName().replace(".","/");
+        String path = classFilePath + "/" + packagePath +"/" + scriptPath;
+        try (FileInputStream fis = new FileInputStream(new File(path));
+             Scanner scanner = new Scanner(new InputStreamReader(fis, StandardCharsets.UTF_8));
+        ){
+            StringBuilder sb = new StringBuilder();
+            while (scanner.hasNext()){
+                sb.append(scanner.next()).append("\n");
+            }
+            if(sb.length() > 0){
+                sb.deleteCharAt(sb.length() - 1);
+            }
+            return sb.toString();
+        }catch (Exception e){
+            throw new RuntimeException("JedisOperator init script error: " + e.getMessage());
+        }
     }
 }

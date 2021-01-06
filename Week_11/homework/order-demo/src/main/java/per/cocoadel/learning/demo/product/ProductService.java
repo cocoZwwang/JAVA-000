@@ -38,9 +38,26 @@ public class ProductService {
         this.orderRepository = orderRepository;
     }
 
+    /**
+     * 订阅订单事件
+     */
     @PostConstruct
     public void init() {
-        //订阅订单事件
+        JedisPubSub orderStateSub = new JedisPubSub() {
+            @Override
+            public void onMessage(String channel, String message) {
+                LOGGER.info(String.format("receive message from channel(%s): %s", channel, message));
+                //如果是订单事件，则处理
+                if (EventType.OrderEvent.ORDER_STATE_EVENT.equals(channel)) {
+                    OrderStateEvent orderStateEvent = JSON.parseObject(message, OrderStateEvent.class);
+                    updateProductStock(orderStateEvent.getOrderId());
+                }
+            }
+            @Override
+            public void onSubscribe(String channel, int subscribedChannels) {
+                super.onSubscribe(channel, subscribedChannels);
+            }
+        };
         executorService.submit(() ->
                 this.redisOperator.subscribe(orderStateSub, EventType.OrderEvent.ORDER_STATE_EVENT));
     }
@@ -66,20 +83,4 @@ public class ProductService {
             redisOperator.publish(EventType.ProductEvent.DELIVER_PRODUCT_EVENT, JSON.toJSONString(event));
         }
     }
-
-    private final JedisPubSub orderStateSub = new JedisPubSub() {
-        @Override
-        public void onMessage(String channel, String message) {
-            LOGGER.info(String.format("receive message from channel(%s): %s", channel, message));
-            //如果是订单事件，则处理
-            if (EventType.OrderEvent.ORDER_STATE_EVENT.equals(channel)) {
-                OrderStateEvent orderStateEvent = JSON.parseObject(message, OrderStateEvent.class);
-                updateProductStock(orderStateEvent.getOrderId());
-            }
-        }
-        @Override
-        public void onSubscribe(String channel, int subscribedChannels) {
-            super.onSubscribe(channel, subscribedChannels);
-        }
-    };
 }

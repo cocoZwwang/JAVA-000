@@ -34,14 +34,36 @@ public class OrderService {
         this.redisOperator = redisOperator;
     }
 
+    /**
+     * 订阅仓库出货通知
+     */
     @PostConstruct
-    public void init(){
-        //订阅仓库出货通知
+    public void init() {
+        JedisPubSub deliverProductSub = new JedisPubSub() {
+            @Override
+            public void onMessage(String channel, String message) {
+                LOGGER.info(String.format("receive message from channel(%s): %s", channel, message));
+                if (EventType.ProductEvent.DELIVER_PRODUCT_EVENT.equals(channel)) {
+                    DeliverProductEvent deliverProductEvent = JSON.parseObject(message, DeliverProductEvent.class);
+                    if ("OK".equals(deliverProductEvent.getMessage())) {
+                        completedOrder(deliverProductEvent.getOrderId());
+                    } else {
+                        failOrder(deliverProductEvent.getOrderId(), deliverProductEvent.getMessage());
+                    }
+
+                }
+            }
+
+            @Override
+            public void onSubscribe(String channel, int subscribedChannels) {
+                super.onSubscribe(channel, subscribedChannels);
+            }
+        };
         executorService.submit(() ->
                 redisOperator.subscribe(deliverProductSub, EventType.ProductEvent.DELIVER_PRODUCT_EVENT));
     }
 
-    public void placeOrder(long productId,int amount) {
+    public void placeOrder(long productId, int amount) {
         //生成订单
         Order order = new Order();
         order.setId(idCreator.incrementAndGet());
@@ -59,7 +81,7 @@ public class OrderService {
         LOGGER.info("send order : " + order.getId());
     }
 
-    private void completedOrder(Long orderId){
+    private void completedOrder(Long orderId) {
         Order order = orderRepository.getOrder(orderId);
         if (order != null) {
             order.setState(OrderState.COMPLETED.getCode());
@@ -68,36 +90,12 @@ public class OrderService {
         }
     }
 
-    private void failOrder(Long orderId,String message){
+    private void failOrder(Long orderId, String message) {
         Order order = orderRepository.getOrder(orderId);
         if (order != null) {
             order.setState(OrderState.FAILURE.getCode());
             orderRepository.updateOrder(order);
-            LOGGER.info(String.format("订单失败(%s)-failOrder: %s" ,message,order));
+            LOGGER.info(String.format("订单失败(%s)-failOrder: %s", message, order));
         }
     }
-
-
-    private final JedisPubSub deliverProductSub = new JedisPubSub() {
-        @Override
-        public void onMessage(String channel, String message) {
-            LOGGER.info(String.format("receive message from channel(%s): %s",channel,message));
-            if (EventType.ProductEvent.DELIVER_PRODUCT_EVENT.equals(channel)) {
-                DeliverProductEvent deliverProductEvent = JSON.parseObject(message, DeliverProductEvent.class);
-                if("OK".equals(deliverProductEvent.getMessage())){
-                    completedOrder(deliverProductEvent.getOrderId());
-                }else{
-                    failOrder(deliverProductEvent.getOrderId(),deliverProductEvent.getMessage());
-                }
-
-            }
-        }
-
-        @Override
-        public void onSubscribe(String channel, int subscribedChannels) {
-            super.onSubscribe(channel, subscribedChannels);
-        }
-    };
-
-
 }
