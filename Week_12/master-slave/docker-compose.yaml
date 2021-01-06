@@ -1,0 +1,29 @@
+version: '3'
+services:
+  redis-master:
+    container_name: redis-master
+    image: registry.cn-shenzhen.aliyuncs.com/cocoadel/redis:5.0.4
+    restart: always
+    ports:
+      - "6379:6379"
+    privileged: true
+    #配置文件/aof持久化文件/db持久化文件
+    volumes: 
+      - ./master/data/:/data/
+      - ./master/logs/:/var/log/redis/
+      - ./master/redis.conf:/usr/local/etc/redis/redis.conf
+  redis-salve:
+    container_name: redis-salve
+    image: registry.cn-shenzhen.aliyuncs.com/cocoadel/redis:5.0.4
+    restart: always
+    ports:
+      - "6380:6379"
+    privileged: true
+    #配置文件/aof持久化文件/db持久化文件
+    volumes: 
+      - ./salve/data/:/data/
+      - ./salve/logs/:/var/log/redis/
+      - ./salve/redis.conf:/usr/local/etc/redis/redis.conf
+
+
+
