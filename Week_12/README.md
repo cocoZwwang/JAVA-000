@@ -3,8 +3,8 @@
 - config配置文件
 
   - 主从复制
-    - master redis.cnf
-    - slave redis.cnf
+    - master [redis.cnf](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_12/master-slave/master/redis.conf)
+    - slave [redis.cnf](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_12/master-slave/slave/redis.conf)
   - sentinel 高可用
   - Cluster 集群
 
