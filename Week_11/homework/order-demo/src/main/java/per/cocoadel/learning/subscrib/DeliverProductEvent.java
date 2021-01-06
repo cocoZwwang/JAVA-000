@@ -1,7 +1,7 @@
-package per.cocoadel.learning.product;
+package per.cocoadel.learning.subscrib;
 
 
-public class DeliverProductMessage {
+public class DeliverProductEvent {
     private Long orderId;
 
     private String message;

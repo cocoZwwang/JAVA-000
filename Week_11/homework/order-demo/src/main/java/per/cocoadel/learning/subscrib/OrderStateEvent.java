@@ -1,4 +1,4 @@
-package per.cocoadel.learning.order;
+package per.cocoadel.learning.subscrib;
 
 public class OrderStateEvent {
     private Long orderId;

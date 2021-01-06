@@ -12,11 +12,11 @@ public interface RedisOperator {
 
     Long incr(String key);
 
-    Long incr(String key,Long topLimit);
+    Long incrBy(String key,Long increment, Long topLimit);
 
     Long decr(String key);
 
-    Long decr(String key,Long lowerLimit);
+    Long decrBy(String key, Long decrement, Long lowerLimit) ;
 
     Boolean setNx(String key,String value);
 

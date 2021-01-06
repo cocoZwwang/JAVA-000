@@ -38,9 +38,9 @@ public class RedisOperatorTest implements ApplicationListener<ApplicationReadyEv
 //            //测试分布式锁
 //            testDistributedLock();
 //            //测试分布式计数器
-//            testCounter();
+            testCounter();
             //测试发布订阅
-            testPubSub();
+//            testPubSub();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -78,7 +78,8 @@ public class RedisOperatorTest implements ApplicationListener<ApplicationReadyEv
         CountDownLatch countDownLatch1 = new CountDownLatch(100);
         for (int i = 0; i < 100; i++) {
             Thread thread = new Thread(() -> {
-                redisOperator.incr("count-test", 80L);
+                Long res = redisOperator.incrBy("count-test",10L, 80L);
+                logger.info(res == null ? "nil" : res.toString());
                 countDownLatch1.countDown();
             });
             thread.start();
@@ -90,7 +91,8 @@ public class RedisOperatorTest implements ApplicationListener<ApplicationReadyEv
         CountDownLatch countDownLatch2 = new CountDownLatch(100);
         for (int i = 0; i < 101; i++) {
             Thread thread = new Thread(() -> {
-                redisOperator.decr("count-test", 0L);
+                Long res = redisOperator.decrBy("count-test",10L, 0L);
+                logger.info(res == null ? "nil" : res.toString());
                 countDownLatch2.countDown();
             });
             thread.start();

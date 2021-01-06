@@ -29,14 +29,14 @@ public class JedisOperator implements RedisOperator {
             "else return 0\n" +
             "end";
 
-    private static final String INCR_TOP_LIMIT_SCRIPT =
-            "if (redis.call('exists', KEYS[1]) == 0 or (tonumber(redis.call('get', KEYS[1])) < tonumber(ARGV[1])))\n" +
-                    "then return redis.call('incr', KEYS[1]);\n" +
+    private static final String INCRBY_TOP_LIMIT_SCRIPT =
+            "if (redis.call('exists', KEYS[1]) == 0 or (tonumber(redis.call('get', KEYS[1]) + tonumber(ARGV[1])) <= tonumber(ARGV[2])))\n" +
+                    "then return redis.call('incrby', KEYS[1], ARGV[1]);\n" +
                     "else return nil; end;";
 
-    private static final String DECR_TOP_LIMIT_SCRIPT =
-            "if (redis.call('exists', KEYS[1]) == 0 or (tonumber(redis.call('get', KEYS[1])) > tonumber(ARGV[1])))\n" +
-                    "then return redis.call('decr', KEYS[1]);\n" +
+    private static final String DECRBY_TOP_LIMIT_SCRIPT =
+            "if (redis.call('exists', KEYS[1]) == 0 or (tonumber(redis.call('get', KEYS[1]) - tonumber(ARGV[1])) >= tonumber(ARGV[2])))\n" +
+                    "then return redis.call('decrby', KEYS[1], ARGV[1]);\n" +
                     "else return nil; end;";
 
     public JedisOperator(JedisPool jedisPool) {
@@ -95,16 +95,16 @@ public class JedisOperator implements RedisOperator {
     }
 
     /**
-     * 自增1，但是最大值不能超过topLimit。
-     * 如果当前值已经是topLimit，则不操作，返回空值
+     * 增加，但是最大值不能超过topLimit。
+     * 如果增加后的值>topLimit，则不操作，返回空值
      */
     @Override
-    public Long incr(String key, Long topLimit) {
+    public Long incrBy(String key, Long increment, Long topLimit) {
         Jedis jedis = acquireJedis();
         if (jedis != null) {
             try {
-                Object eval = jedis.eval(INCR_TOP_LIMIT_SCRIPT, Collections.singletonList(key),
-                        Collections.singletonList(topLimit.toString()));
+                Object eval = jedis.eval(INCRBY_TOP_LIMIT_SCRIPT, Collections.singletonList(key),
+                        Arrays.asList(increment.toString(), topLimit.toString()));
                 if (eval != null) {
                     return Long.parseLong(eval.toString());
                 }
@@ -136,12 +136,12 @@ public class JedisOperator implements RedisOperator {
      * 如果当前值已经是最小值，则不操作，返回空值
      */
     @Override
-    public Long decr(String key, Long lowerLimit) {
+    public Long decrBy(String key, Long decrement, Long lowerLimit) {
         Jedis jedis = acquireJedis();
         if (jedis != null) {
             try {
-                Object res = jedis.eval(DECR_TOP_LIMIT_SCRIPT, Collections.singletonList(key),
-                        Collections.singletonList(lowerLimit + ""));
+                Object res = jedis.eval(DECRBY_TOP_LIMIT_SCRIPT, Collections.singletonList(key),
+                        Arrays.asList(decrement.toString(), lowerLimit.toString()));
                 if (res != null) {
                     return Long.valueOf(res.toString());
                 }

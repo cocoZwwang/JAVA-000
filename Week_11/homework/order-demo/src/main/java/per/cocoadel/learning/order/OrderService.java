@@ -1,12 +1,19 @@
 package per.cocoadel.learning.order;
 
 import com.alibaba.fastjson.JSON;
-import per.cocoadel.learning.product.DeliverProductMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import per.cocoadel.learning.subscrib.DeliverProductEvent;
+import per.cocoadel.learning.subscrib.EventType;
+import per.cocoadel.learning.subscrib.OrderStateEvent;
 import pers.cocoadel.learning.redis.RedisOperator;
 import redis.clients.jedis.JedisPubSub;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+@Service
 public class OrderService {
     private final OrderRepository orderRepository;
 
@@ -14,15 +21,14 @@ public class OrderService {
 
     private final AtomicLong idCreator = new AtomicLong(0);
 
-    private final String DELIVER_PRODUCT_CHANNEL = "deliver_product_channel";
+    private static final Logger LOGGER = LoggerFactory.getLogger(OrderService.class);
 
-    private final String ORDER_STATE_CHANNEL = "order_state_channel";
-
+    @Autowired
     public OrderService(OrderRepository orderRepository, RedisOperator redisOperator) {
         this.orderRepository = orderRepository;
         this.redisOperator = redisOperator;
         //订阅仓库出货通知
-        redisOperator.subscribe(deliverProductSub,DELIVER_PRODUCT_CHANNEL);
+        redisOperator.subscribe(deliverProductSub, EventType.ProductEvent.DELIVER_PRODUCT_EVENT);
     }
 
     public void placeOrder() {
@@ -34,11 +40,13 @@ public class OrderService {
         order.setUserId(1L);
         order.setState(OrderState.PAYED.getCode());
         orderRepository.addOrder(order);
+        LOGGER.info("placeOrder: " + order);
         //发生订单生成消息
         OrderStateEvent orderStateEvent = new OrderStateEvent();
         orderStateEvent.setOrderId(order.getId());
         orderStateEvent.setOrderState(order.getState());
-        redisOperator.publish(ORDER_STATE_CHANNEL, JSON.toJSONString(orderStateEvent));
+        redisOperator.publish(EventType.OrderEvent.ORDER_STATE_EVENT, JSON.toJSONString(orderStateEvent));
+        LOGGER.info("send order : " + order.getId());
     }
 
     private void completedOrder(Long orderId){
@@ -46,6 +54,7 @@ public class OrderService {
         if (order != null) {
             order.setState(OrderState.COMPLETED.getCode());
             orderRepository.updateOrder(order);
+            LOGGER.info("completedOrder: " + order);
         }
     }
 
@@ -54,6 +63,7 @@ public class OrderService {
         if (order != null) {
             order.setState(OrderState.FAILURE.getCode());
             orderRepository.updateOrder(order);
+            LOGGER.info("failOrder: " + order);
         }
     }
 
@@ -61,12 +71,13 @@ public class OrderService {
     private final JedisPubSub deliverProductSub = new JedisPubSub() {
         @Override
         public void onMessage(String channel, String message) {
-            if (DELIVER_PRODUCT_CHANNEL.equals(channel)) {
-                DeliverProductMessage deliverProductMessage = JSON.parseObject(message,DeliverProductMessage.class);
-                if("OK".equals(deliverProductMessage.getMessage())){
-                    completedOrder(deliverProductMessage.getOrderId());
+            LOGGER.info(String.format("receive message from channel(%s): %s",channel,message));
+            if (EventType.ProductEvent.DELIVER_PRODUCT_EVENT.equals(channel)) {
+                DeliverProductEvent deliverProductEvent = JSON.parseObject(message, DeliverProductEvent.class);
+                if("OK".equals(deliverProductEvent.getMessage())){
+                    completedOrder(deliverProductEvent.getOrderId());
                 }else{
-                    failOrder(deliverProductMessage.getOrderId());
+                    failOrder(deliverProductEvent.getOrderId());
                 }
 
             }
