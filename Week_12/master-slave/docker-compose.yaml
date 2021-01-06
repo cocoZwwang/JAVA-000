@@ -12,8 +12,8 @@ services:
       - ./master/data/:/data/
       - ./master/logs/:/var/log/redis/
       - ./master/redis.conf:/usr/local/etc/redis/redis.conf
-  redis-salve:
-    container_name: redis-salve
+  redis-slave:
+    container_name: redis-slave
     image: registry.cn-shenzhen.aliyuncs.com/cocoadel/redis:5.0.4
     restart: always
     ports:
@@ -21,9 +21,9 @@ services:
     privileged: true
     #配置文件/aof持久化文件/db持久化文件
     volumes: 
-      - ./salve/data/:/data/
-      - ./salve/logs/:/var/log/redis/
-      - ./salve/redis.conf:/usr/local/etc/redis/redis.conf
+      - ./slave/data/:/data/
+      - ./slave/logs/:/var/log/redis/
+      - ./slave/redis.conf:/usr/local/etc/redis/redis.conf
 
 
 
