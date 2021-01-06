@@ -39,6 +39,7 @@ public class InsertDataBootstrap implements ApplicationListener<ApplicationReady
         createInsertSqlFile();
     }
 
+    //TODO  把下面的这些业务类封装到相应的Service，同时更新md文档
     private void statOrders() {
         long time = System.currentTimeMillis();
         Calendar calendar = Calendar.getInstance();

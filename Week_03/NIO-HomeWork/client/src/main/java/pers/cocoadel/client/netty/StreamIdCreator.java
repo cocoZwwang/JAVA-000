@@ -1,4 +1,5 @@
 package pers.cocoadel.client.netty;
 
-public class StreamIdCreator {
+public interface StreamIdCreator {
+    long nextId();
 }

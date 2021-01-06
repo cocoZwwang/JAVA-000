@@ -6,6 +6,6 @@ package pers.cocoadel.netty;
 public class HttpServerBootstrap {
     public static void main(String[] args) {
         HttpServer httpServer = new HttpServer();
-        httpServer.bind(8802);
+        httpServer.bind(8801);
     }
 }

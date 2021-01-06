@@ -18,7 +18,7 @@ import static pers.cocoadel.learning.http.event.HttpStageEvent.HTTP_STAGE_WAITIN
 
 /**
  * Http单channel复用
- * Http请求发起 -> Http结果返回处理，每次会话只会和一个HttpFutureHandler绑定。
+ * Http请求发起 -> Http结果返回处理，每次会话只会和一个HttpRestHandler绑定。
  * http发送请求动态添加到Channel pipeline中
  * http返回则动态移除
  * 如果Channel通信发生异常，则当前Channel直接关闭

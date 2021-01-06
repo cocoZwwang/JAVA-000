@@ -1,5 +1,6 @@
 package pers.cocoadel.aio;
 
+import com.sun.deploy.net.HttpResponse;
 import io.netty.util.CharsetUtil;
 
 import java.io.BufferedReader;

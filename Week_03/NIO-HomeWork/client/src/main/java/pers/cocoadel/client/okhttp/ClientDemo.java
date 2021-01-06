@@ -16,12 +16,14 @@ public class ClientDemo {
      * @throws IOException
      */
     public static void main(String[] args) throws IOException {
-        String url = "http://localhost:8808/";
+//        String url = "http://localhost:8801/";
+        String url = "https://www.baidu.com/";
         OkHttpClient okHttpClient = new OkHttpClient();
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
         for(int i = 0; i < 10;i++){
+
             final Call call = okHttpClient.newCall(request);
             Response response = call.execute();
             System.out.println(response.body().string());

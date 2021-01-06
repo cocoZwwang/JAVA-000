@@ -34,12 +34,12 @@ public class BioHttpServer {
     private static void service(Socket socket){
         try {
             Thread.sleep(20);
-            String value = getHeader("nio",socket);
+//            String value = getHeader("nio",socket);
             PrintWriter printWriter = new PrintWriter(socket.getOutputStream(),true);
             printWriter.println("HTTP/1.1 200 OK");
             printWriter.println("Content-Type:text/html;charset=utf-8");
             printWriter.println();
-            printWriter.write(String.format("hello %s! I am BIO Server !",value));
+            printWriter.write(String.format("hello %s! I am BIO Server !","value"));
             printWriter.close();
             socket.close();
         } catch (InterruptedException | IOException e) {

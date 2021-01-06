@@ -27,7 +27,8 @@ public class HttpInboundHandler extends ChannelInboundHandlerAdapter {
             String content = String.format("hello %s! I am Netty Server !",value);
             response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK,
                     Unpooled.wrappedBuffer(content.getBytes(StandardCharsets.UTF_8)));
-            response.headers().add("Content-Type","text/html;charset=utf-8");
+            response.headers().add(fullHttpRequest.headers());
+//            response.headers().add("Content-Type","text/html;charset=utf-8");
             response.headers().add("Content-Length",response.content().readableBytes());
         } catch (Exception e) {
             e.printStackTrace();
@@ -35,10 +36,10 @@ public class HttpInboundHandler extends ChannelInboundHandlerAdapter {
             response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1,HttpResponseStatus.NO_CONTENT);
         }finally {
             if (HttpUtil.isKeepAlive(fullHttpRequest)) {
-                ctx.write(response).addListener(ChannelFutureListener.CLOSE);
+                ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
             } else {
                 response.headers().add(CONNECTION,KEEP_ALIVE);
-                ctx.write(response);
+                ctx.writeAndFlush(response);
             }
         }
     }

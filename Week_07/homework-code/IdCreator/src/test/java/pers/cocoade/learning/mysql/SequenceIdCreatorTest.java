@@ -1,5 +1,6 @@
 package pers.cocoade.learning.mysql;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,11 @@ public class SequenceIdCreatorTest {
     @Autowired
     @Qualifier("SequenceId")
     private IdCreator idCreator;
+
+    @Before
+    public void before(){
+        System.out.println("before");
+    }
 
     @Test
     public void nextId() {

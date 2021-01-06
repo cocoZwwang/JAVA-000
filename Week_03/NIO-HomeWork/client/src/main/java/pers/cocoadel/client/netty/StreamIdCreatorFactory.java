@@ -1,4 +1,8 @@
 package pers.cocoadel.client.netty;
 
-public class StreamIdCreatorFacotry {
+public class StreamIdCreatorFactory {
+
+    public static StreamIdCreator getDefaultStreamIdCreator(){
+        return  new StreamIdCreatorImpl();
+    }
 }
