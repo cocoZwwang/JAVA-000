@@ -1,0 +1,79 @@
+version: '3'
+services:
+  redis1:
+    container_name: redis1
+    image: registry.cn-shenzhen.aliyuncs.com/cocoadel/redis:5.0.4
+    restart: always
+    ports:
+      - "6379:6379"
+    privileged: true
+    #配置文件/aof持久化文件/db持久化文件
+    volumes: 
+      - ./redis1/data/:/data/
+      - ./redis1/logs/:/var/log/redis/
+      - ./redis1/redis.conf:/usr/local/etc/redis/redis.conf
+  redis2:
+    container_name: redis2
+    image: registry.cn-shenzhen.aliyuncs.com/cocoadel/redis:5.0.4
+    restart: always
+    ports:
+      - "6380:6379"
+    privileged: true
+    #配置文件/aof持久化文件/db持久化文件
+    volumes: 
+      - ./redis2/data/:/data/
+      - ./redis2/logs/:/var/log/redis/
+      - ./redis2/redis.conf:/usr/local/etc/redis/redis.conf
+
+  redis3:
+    container_name: redis3
+    image: registry.cn-shenzhen.aliyuncs.com/cocoadel/redis:5.0.4
+    restart: always
+    ports:
+      - "6479:6379"
+    privileged: true
+    #配置文件/aof持久化文件/db持久化文件
+    volumes: 
+      - ./redis3/data/:/data/
+      - ./redis3/logs/:/var/log/redis/
+      - ./redis3/redis.conf:/usr/local/etc/redis/redis.conf
+  redis4:
+    container_name: redis4
+    image: registry.cn-shenzhen.aliyuncs.com/cocoadel/redis:5.0.4
+    restart: always
+    ports:
+      - "6480:6379"
+    privileged: true
+    #配置文件/aof持久化文件/db持久化文件
+    volumes: 
+      - ./redis4/data/:/data/
+      - ./redis4/logs/:/var/log/redis/
+      - ./redis4/redis.conf:/usr/local/etc/redis/redis.conf
+
+  redis5:
+    container_name: redis5
+    image: registry.cn-shenzhen.aliyuncs.com/cocoadel/redis:5.0.4
+    restart: always
+    ports:
+      - "6579:6379"
+    privileged: true
+    #配置文件/aof持久化文件/db持久化文件
+    volumes: 
+      - ./redis5/data/:/data/
+      - ./redis5/logs/:/var/log/redis/
+      - ./redis5/redis.conf:/usr/local/etc/redis/redis.conf
+  redis6:
+    container_name: redis6
+    image: registry.cn-shenzhen.aliyuncs.com/cocoadel/redis:5.0.4
+    restart: always
+    ports:
+      - "6580:6379"
+    privileged: true
+    #配置文件/aof持久化文件/db持久化文件
+    volumes: 
+      - ./redis6/data/:/data/
+      - ./redis6/logs/:/var/log/redis/
+      - ./redis6/redis.conf:/usr/local/etc/redis/redis.conf
+
+
+

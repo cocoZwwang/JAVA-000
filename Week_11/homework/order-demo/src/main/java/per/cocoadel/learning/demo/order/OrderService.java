@@ -73,7 +73,7 @@ public class OrderService {
         order.setState(OrderState.PAYED.getCode());
         orderRepository.addOrder(order);
         LOGGER.info("placeOrder: " + order);
-        //发生订单生成消息
+        //发送订单生成事件
         OrderStateEvent orderStateEvent = new OrderStateEvent();
         orderStateEvent.setOrderId(order.getId());
         orderStateEvent.setOrderState(order.getState());
