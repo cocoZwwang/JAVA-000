@@ -164,9 +164,13 @@
 
   创建集群，下面这些IP是在docker-compose里面指定的容器的固定子网ip。
   
+  
+
   ```shell
 redis-cli --cluster create 172.19.0.79:6379 172.19.0.80:6380 172.19.0.81:6381 172.19.0.82:6382 172.19.0.83:6383 172.19.0.84:6384 --cluster-replicas 1
   ```
+  
+  
   
   ```cmd
   [root@subway-centre cluster1]# docker exec -ti redis-6379 /bin/bash
