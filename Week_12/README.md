@@ -35,28 +35,28 @@
 
   - 连接master
 
-    ```cmd
+    ```shell
     H:\Redis-x64-5.0.9>redis-cli -h 192.168.3.100 -p 6379
     192.168.3.100:6379>
     ```
 
   - 连接slave
 
-    ```cmd
+    ```shell
     H:\Redis-x64-5.0.9>redis-cli -h 192.168.3.100 -p 6380
     192.168.3.100:6380>
     ```
 
   - maser写入数据
 
-    ```cmd
+    ```shell
     192.168.3.100:6379> set a 100
     OK
     ```
 
   - slave读取数据
 
-    ```cmd
+    ```shell
     192.168.3.100:6380> get a
     "100"
     192.168.3.100:6380>
@@ -70,7 +70,7 @@
 
   master:
 
-  ```cmd
+  ```shell
   H:\Redis-x64-5.0.9>redis-cli -h 192.168.3.100 -p 6379
   192.168.3.100:6379> set a 1
   OK
@@ -79,7 +79,7 @@
 
   slave1:
 
-  ```cmd
+  ```shell
   H:\Redis-x64-5.0.9>redis-cli -h 192.168.3.100 -p 6380
   192.168.3.100:6380> get a
   "1"
@@ -87,7 +87,7 @@
 
   slave2:
 
-  ```cmd
+  ```shell
   H:\Redis-x64-5.0.9>redis-cli -h 192.168.3.100 -p 6381
   192.168.3.100:6381> get a
   "1"
@@ -118,7 +118,7 @@
 
 - info replication查看那个slave被切换成master
 
-  ```cmd
+  ```shell
   192.168.3.100:6380> info replication
   # Replication
   role:slave
@@ -126,7 +126,7 @@
   master_port:6379
   ```
 
-  ```cmd
+  ```shell
   H:\Redis-x64-5.0.9>redis-cli -h 192.168.3.100 -p 6381
   192.168.3.100:6381> info replication
   # Replication
@@ -147,7 +147,7 @@
   Starting redis-master ... done
   ```
 
-  ```cmd
+  ```powershell
   H:\Redis-x64-5.0.9>redis-cli -h 192.168.3.100 -p 6379
   192.168.3.100:6379> info replication
   # Replication
@@ -168,7 +168,7 @@
     redis-cli --cluster create 172.19.0.79:6379 172.19.0.80:6380 172.19.0.81:6381 172.19.0.82:6382 172.19.0.83:6383 172.19.0.84:6384 --cluster-replicas 1
   ```
 
-  ```sehll
+  ```shell
   [root@subway-centre cluster1]# docker exec -ti redis-6379 /bin/bash
   root@c22ae413bf6e:/data# redis-cli --cluster create 172.19.0.79:6379 172.19.0.80:6380 172.19.0.81:6381 172.19.0.82:6382 172.19.0.83:6383 172.19.0.84:6384 --cluster-replicas 1
   >>> Performing hash slots allocation on 6 nodes...
