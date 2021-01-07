@@ -14,8 +14,8 @@
     - sentinel2：[sentinel.conf](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_12/sentinel/sentinel2/sentinel.conf)
     - [docker-compose.yaml](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_12/sentinel/docker-compose.yaml)
   - Cluster 集群
-    - docker-compose.yaml
-    - redis1、redis2、redis3、redis4、redis5、redis6
+    - [docker-compose.yaml](https://github.com/cocoZwwang/JAVA-000/tree/main/Week_12/cluster)
+    - [redis1、redis2、redis3、redis4、redis5、redis6](https://github.com/cocoZwwang/JAVA-000/tree/main/Week_12/cluster)
 
 - 启动和操作、验证集群下数据读写的命令步骤。
 
