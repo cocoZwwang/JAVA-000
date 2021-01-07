@@ -5,14 +5,14 @@
   - 主从复制
     - master [redis.cnf](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_12/master-slave/master/redis.conf)
     - slave [redis.cnf](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_12/master-slave/slave/redis.conf)
-    - docker-compose.yaml
+    - [docker-compose.yaml](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_12/master-slave/docker-compose.yaml)
   - sentinel 高可用
-    - master
-    - slave1
-    - slave2
-    - sentinel1
-    - sentinel2
-    - docker-compose.yaml
+    - master：[redis.cnf](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_12/sentinel/master/redis.conf)
+    - slave1：[redis.cnf](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_12/sentinel/slave1/redis.conf)
+    - slave2：[redis.cnf](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_12/sentinel/slave2/redis.conf)
+    - sentinel1：[sentinel.conf](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_12/sentinel/sentinel1/sentinel.conf)
+    - sentinel2：[sentinel.conf](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_12/sentinel/sentinel2/sentinel.conf)
+    - [docker-compose.yaml](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_12/sentinel/docker-compose.yaml)
   - Cluster 集群
 
 - 启动和操作、验证集群下数据读写的命令步骤。
