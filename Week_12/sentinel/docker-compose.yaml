@@ -1,0 +1,67 @@
+version: '3'
+services:
+  redis-sentinel1:
+    container_name: redis-sentinel1
+    image: registry.cn-shenzhen.aliyuncs.com/cocoadel/redis:5.0.4
+    restart: always
+    ports:
+      - "26379:26379"
+    privileged: true
+    #配置文件/aof持久化文件/db持久化文件
+    volumes: 
+      - ./sentinel1/data/:/data/
+      - ./sentinel1/logs/:/var/log/redis/
+      - ./sentinel1/sentinel.conf:/usr/local/etc/redis/sentinel.conf
+    command: ["redis-sentinel", "/usr/local/etc/redis/sentinel.conf"]
+  redis-sentinel2:
+    container_name: redis-sentinel2
+    image: registry.cn-shenzhen.aliyuncs.com/cocoadel/redis:5.0.4
+    restart: always
+    ports:
+      - "26380:26379"
+    privileged: true
+    #配置文件/aof持久化文件/db持久化文件
+    volumes: 
+      - ./sentinel2/data/:/data/
+      - ./sentinel2/logs/:/var/log/redis/
+      - ./sentinel2/sentinel.conf:/usr/local/etc/redis/sentinel.conf
+    command: ["redis-sentinel", "/usr/local/etc/redis/sentinel.conf"]
+  redis-master:
+    container_name: redis-master
+    image: registry.cn-shenzhen.aliyuncs.com/cocoadel/redis:5.0.4
+    restart: always
+    ports:
+      - "6379:6379"
+    privileged: true
+    #配置文件/aof持久化文件/db持久化文件
+    volumes: 
+      - ./master/data/:/data/
+      - ./master/logs/:/var/log/redis/
+      - ./master/redis.conf:/usr/local/etc/redis/redis.conf
+  redis-slave1:
+    container_name: redis-slave1
+    image: registry.cn-shenzhen.aliyuncs.com/cocoadel/redis:5.0.4
+    restart: always
+    ports:
+      - "6380:6379"
+    privileged: true
+    #配置文件/aof持久化文件/db持久化文件
+    volumes: 
+      - ./slave1/data/:/data/
+      - ./slave1/logs/:/var/log/redis/
+      - ./slave1/redis.conf:/usr/local/etc/redis/redis.conf
+  redis-slave2:
+    container_name: redis-slave2
+    image: registry.cn-shenzhen.aliyuncs.com/cocoadel/redis:5.0.4
+    restart: always
+    ports:
+      - "6381:6379"
+    privileged: true
+    #配置文件/aof持久化文件/db持久化文件
+    volumes: 
+      - ./slave2/data/:/data/
+      - ./slave2/logs/:/var/log/redis/
+      - ./slave2/redis.conf:/usr/local/etc/redis/redis.conf
+
+
+
