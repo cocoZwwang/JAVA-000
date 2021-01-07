@@ -162,17 +162,13 @@
 
 - 通过redis-cli初始化Redis集群
 
-  创建集群，下面这些IP是在docker-compose里面指定的容器的固定子网ip。
+  创建集群，下面这些IP是在docker-compose里面指定的容器的固定子网ip
   
-  
-
   ```shell
 redis-cli --cluster create 172.19.0.79:6379 172.19.0.80:6380 172.19.0.81:6381 172.19.0.82:6382 172.19.0.83:6383 172.19.0.84:6384 --cluster-replicas 1
   ```
-  
-  
-  
-  ```cmd
+
+  ```sehll
   [root@subway-centre cluster1]# docker exec -ti redis-6379 /bin/bash
   root@c22ae413bf6e:/data# redis-cli --cluster create 172.19.0.79:6379 172.19.0.80:6380 172.19.0.81:6381 172.19.0.82:6382 172.19.0.83:6383 172.19.0.84:6384 --cluster-replicas 1
   >>> Performing hash slots allocation on 6 nodes...
@@ -202,9 +198,7 @@ redis-cli --cluster create 172.19.0.79:6379 172.19.0.80:6380 172.19.0.81:6381 17
   ..
   ```
   
-  这时候会一直等待，并且可以看到最后有提示：
-  
-  > Sending CLUSTER MEET messages to join the cluster
+  这时候会一直等待，并且可以看到最后有提示：Sending CLUSTER MEET messages to join the cluster
   
   登录6379 容器，分别cluster meet其他几个节点
   
