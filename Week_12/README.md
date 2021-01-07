@@ -198,24 +198,24 @@
   ..
   ```
   
-  这时候会一直等待，并且可以看到最后有提示：Sending CLUSTER MEET messages to join the cluster
+  这时候有可能会一直等待，并且可以看到最后有提示：Sending CLUSTER MEET messages to join the cluster
   
   登录6379 容器，分别cluster meet其他几个节点
   
   ```shell
   [root@subway-centre cluster1]# docker exec -ti redis-6379 /bin/bash
   root@28236ac8e13b:/data# cd /usr/local/bin/
-  root@28236ac8e13b:/usr/local/bin# redis-cli -c -p 6379 cluster meet 192.168.3.100 6379
+  root@28236ac8e13b:/usr/local/bin# redis-cli -c -p 6379 cluster meet 172.19.0.79:6379
   OK
-  root@28236ac8e13b:/usr/local/bin# redis-cli -c -p 6379 cluster meet 192.168.3.100 6380
+  root@28236ac8e13b:/usr/local/bin# redis-cli -c -p 6379 cluster meet 172.19.0.80:6380
   OK
-  root@28236ac8e13b:/usr/local/bin# redis-cli -c -p 6379 cluster meet 192.168.3.100 6381
+  root@28236ac8e13b:/usr/local/bin# redis-cli -c -p 6379 cluster meet 172.19.0.81:6381
   OK
-  root@28236ac8e13b:/usr/local/bin# redis-cli -c -p 6379 cluster meet 192.168.3.100 6382
+  root@28236ac8e13b:/usr/local/bin# redis-cli -c -p 6379 cluster meet 172.19.0.82:6382
   OK
-  root@28236ac8e13b:/usr/local/bin# redis-cli -c -p 6379 cluster meet 192.168.3.100 6383
+  root@28236ac8e13b:/usr/local/bin# redis-cli -c -p 6379 cluster meet 172.19.0.83:6383
   OK
-  root@28236ac8e13b:/usr/local/bin# redis-cli -c -p 6379 cluster meet 192.168.3.100 6384
+  root@28236ac8e13b:/usr/local/bin# redis-cli -c -p 6379 cluster meet 172.19.0.84:6384
   OK
   root@28236ac8e13b:/usr/local/bin#
   ```
