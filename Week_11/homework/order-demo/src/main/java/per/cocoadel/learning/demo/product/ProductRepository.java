@@ -41,7 +41,7 @@ public class ProductRepository {
             //如果减少后的库存<0,则不执行减库存操作,返回null
             return redisOperator.decrBy(getProductStockKey(product.getId()),decrement,0L) != null;
         }
-        return true;
+        return false;
     }
 
     public Product getProduct(Long productId) {
