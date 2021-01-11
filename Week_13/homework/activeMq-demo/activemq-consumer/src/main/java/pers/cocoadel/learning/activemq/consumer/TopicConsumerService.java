@@ -11,7 +11,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Service
-public class ConsumerService {
+public class TopicConsumerService {
     private static final String url = "tcp://192.168.3.32:61616";
 
     private final Object lock = new Object();

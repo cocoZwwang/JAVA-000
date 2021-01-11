@@ -9,7 +9,7 @@ import javax.jms.Session;
 import javax.jms.TextMessage;
 
 
-public class ProducerService {
+public class TopicProducerService {
     private static final String url = "tcp://192.168.3.32:61616";
 
     public void send(){
