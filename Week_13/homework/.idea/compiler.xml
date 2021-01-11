@@ -8,6 +8,8 @@
         <outputRelativeToContentRoot value="true" />
         <module name="activemq-consumer" />
         <module name="activemq-producer" />
+        <module name="kafka-consumer" />
+        <module name="kafka-producer" />
       </profile>
     </annotationProcessing>
   </component>
