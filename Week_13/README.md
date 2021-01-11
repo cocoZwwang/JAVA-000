@@ -102,6 +102,7 @@ start.time, end.time, data.consumed.in.MB, MB.sec, data.consumed.in.nMsg, nMsg.s
 	buffer.memory = 33554432
 	client.dns.lookup = use_all_dns_ips
 	client.id = producer-1
+    ...
 ```
 
 ### 消费端代码
