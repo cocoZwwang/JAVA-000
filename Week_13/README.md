@@ -18,7 +18,7 @@
 
 ### 配置
 
-server-9001.properties,server-9002.properties,server-9003.properties
+[server-9001.properties,server-9002.properties,server-9003.properties](https://github.com/cocoZwwang/JAVA-000/tree/main/Week_13/kafka-cluster/config)
 
 ### 测试是否集群是否成功
 
@@ -88,19 +88,45 @@ start.time, end.time, data.consumed.in.MB, MB.sec, data.consumed.in.nMsg, nMsg.s
 
 ### 生产端代码
 
-项目路径：
+项目路径：[homework/kafka-demo/kafka-producer](homework/kafka-demo/kafka-producer)
 
-生产端Service：
+生产端Service： [ProducerImpl](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_13/homework/kafka-demo/kafka-producer/src/main/java/pers/cocoadel/learning/kafka/producer/ProducerImpl.java) 
 
 运行结果：
+
+```java
+2021-01-11 22:57:23.665  INFO 15196 --- [           main] o.a.k.clients.producer.ProducerConfig    : ProducerConfig values: 
+	acks = 1
+	batch.size = 16384
+	bootstrap.servers = [192.168.3.32:9001, 192.168.3.32:9002, 192.168.3.32:9003]
+	buffer.memory = 33554432
+	client.dns.lookup = use_all_dns_ips
+	client.id = producer-1
+```
 
 ### 消费端代码
 
-项目路径：
+项目路径：[homework/kafka-demo/kafka-consumer](https://github.com/cocoZwwang/JAVA-000/tree/main/Week_13/homework/kafka-demo/kafka-consumer)
 
-消费端Service：
+消费端Service： [ConsumerImpl](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_13/homework/kafka-demo/kafka-consumer/src/main/java/pers/cocoade/learning/kafka/consumer/ConsumerImpl.java) 
 
 运行结果：
+
+```java
+2021-01-11 22:56:58.017  INFO 6928 --- [           main] o.a.k.c.c.internals.SubscriptionState    : [Consumer clientId=consumer-pers.ocoadel-1, groupId=pers.ocoadel] Resetting offset for partition order.test-0 to offset 0.
+receive order: Order(id=1, ts=1, symbol=symbol-1, price=10.0)
+receive order: Order(id=2, ts=2, symbol=symbol-2, price=10.0)
+receive order: Order(id=3, ts=3, symbol=symbol-3, price=10.0)
+receive order: Order(id=4, ts=4, symbol=symbol-4, price=10.0)
+receive order: Order(id=5, ts=5, symbol=symbol-5, price=10.0)
+receive order: Order(id=6, ts=6, symbol=symbol-6, price=10.0)
+receive order: Order(id=7, ts=7, symbol=symbol-7, price=10.0)
+receive order: Order(id=8, ts=8, symbol=symbol-8, price=10.0)
+receive order: Order(id=9, ts=9, symbol=symbol-9, price=10.0)
+receive order: Order(id=10, ts=10, symbol=symbol-10, price=10.0)
+```
+
+
 
 ### 
 
