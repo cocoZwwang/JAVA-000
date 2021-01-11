@@ -86,11 +86,11 @@ start.time, end.time, data.consumed.in.MB, MB.sec, data.consumed.in.nMsg, nMsg.s
 
 ### Spring kafka对kafka集群操作代码
 
-### 生产端代码
+### 生产端
 
-项目路径：[homework/kafka-demo/kafka-producer](homework/kafka-demo/kafka-producer)
+配置：[application.yaml](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_13/homework/kafka-demo/kafka-producer/src/main/resources/application.yaml)
 
-生产端Service： [ProducerImpl](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_13/homework/kafka-demo/kafka-producer/src/main/java/pers/cocoadel/learning/kafka/producer/ProducerImpl.java) 
+代码：[KafkaMessageController](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_13/homework/kafka-demo/kafka-consumer/src/main/java/pers/cocoade/learning/kafka/consumer/KafkaMessageController.java)
 
 运行结果：
 
@@ -105,11 +105,11 @@ start.time, end.time, data.consumed.in.MB, MB.sec, data.consumed.in.nMsg, nMsg.s
         ...
 ```
 
-### 消费端代码
+### 消费端
 
-项目路径：[homework/kafka-demo/kafka-consumer](https://github.com/cocoZwwang/JAVA-000/tree/main/Week_13/homework/kafka-demo/kafka-consumer)
+配置：[application.yaml](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_13/homework/kafka-demo/kafka-consumer/src/main/resources/application.yaml)
 
-消费端Service： [ConsumerImpl](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_13/homework/kafka-demo/kafka-consumer/src/main/java/pers/cocoade/learning/kafka/consumer/ConsumerImpl.java) 
+代码：[ProducerService](https://github.com/cocoZwwang/JAVA-000/blob/main/Week_13/homework/kafka-demo/kafka-producer/src/main/java/pers/cocoadel/learning/kafka/producer/ProducerService.java)
 
 运行结果：
 
