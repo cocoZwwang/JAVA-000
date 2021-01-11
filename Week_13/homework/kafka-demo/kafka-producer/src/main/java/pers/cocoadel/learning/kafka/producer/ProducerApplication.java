@@ -1,20 +1,19 @@
 package pers.cocoadel.learning.kafka.producer;
 
-import com.sun.org.apache.xpath.internal.operations.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 @SpringBootApplication
 public class ProducerApplication implements ApplicationListener<ApplicationReadyEvent> {
+
     @Autowired
-    private Producer producer;
+    private ProducerService producerService;
 
     public static void main(String[] args) {
         SpringApplication.run(ProducerApplication.class, args);
@@ -24,7 +23,7 @@ public class ProducerApplication implements ApplicationListener<ApplicationReady
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
         List<Order>  orders = createList();
         for (Order order : orders) {
-            producer.send(order);
+            producerService.sendOrder(order);
         }
     }
 

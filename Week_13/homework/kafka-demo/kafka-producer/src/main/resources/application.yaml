@@ -1,2 +1,10 @@
 server:
-  port: 8090
+  port: 9090
+
+spring:
+  kafka:
+    bootstrap-servers: 192.168.3.32:9001,192.168.3.32:9002,192.168.3.32:9003
+    consumer:
+      auto-offset-reset: latest
+      max-poll-records: 100
+      max-partition-fetch-bytes: 1000000
