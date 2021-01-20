@@ -8,3 +8,27 @@
 - 2）定义Topic，支持多个Topic
 - 3）定义Producer，支持Send消息
 - 4）定义Consumer，支持Poll消息
+
+这个版本老师的代码已经实现，我按照老师的思路抽象了一部分的接口，方便后面版本的扩展。
+
+代码：[cmq-core](https://github.com/cocoZwwang/JAVA-000/tree/main/Week_14/homework/cmq-core)
+
+#### 第二个版本：自定义Queue
+
+去掉内存Queue，设计自定义Queue，实现消息确认和消费offset
+
+- 1）自定义内存Message数组模拟Queue。（已完成）
+- 2）使用指针记录当前消息写入位置。（已完成）
+- 3）对于每个命名消费者，用指针记录消费位置。（已完成）
+
+代码：[cmq-v2](https://github.com/cocoZwwang/JAVA-000/tree/main/Week_14/homework/cmq-v2)
+
+#### 第三个版本：基于SpringMVC实现MQServer
+
+拆分broker和client(包括producer和consumer)
+
+- 1）将Queue保存到web server端
+- 2）设计消息读写API接口，确认接口，提交offset接口
+- 3）producer和consumer通过httpclient访问Queue
+- 4）实现消息确认，offset提交
+- 5）实现consumer从offset增量拉取
