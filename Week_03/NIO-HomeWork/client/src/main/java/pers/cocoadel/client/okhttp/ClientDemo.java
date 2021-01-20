@@ -23,6 +23,17 @@ public class ClientDemo {
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
+        okHttpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+
+            }
+        });
         for(int i = 0; i < 10;i++){
 
             final Call call = okHttpClient.newCall(request);

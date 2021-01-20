@@ -6,7 +6,11 @@ import java.util.concurrent.TimeUnit;
 
 public interface RedisOperator {
 
-    Boolean tryLock(String key, String keyId, Long timeOut, TimeUnit timeUnit);
+    Boolean tryLock(String key, String keyId, Long exTime, TimeUnit timeUnit);
+
+    Boolean tryLock(String key, String keyId, Long exTime, TimeUnit exTimeUnit,Long tryTimeOut,TimeUnit tryTimeOutUnit);
+
+    Boolean tryLock(String key, String keyId, Long exTimeMills,Long tryTimeOutMills);
 
     Boolean releaseLock(String key,String keyId);
 

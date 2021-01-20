@@ -32,11 +32,11 @@ public class RedisOperatorTest implements ApplicationListener<ApplicationReadyEv
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
         try {
 //            //测试分布式锁
-//            testDistributedLock();
+            testDistributedLock();
 //            //测试分布式计数器
 //            testCounter();
             //测试发布订阅
-            testPubSub();
+//            testPubSub();
         } catch (Exception e) {
             e.printStackTrace();
         }

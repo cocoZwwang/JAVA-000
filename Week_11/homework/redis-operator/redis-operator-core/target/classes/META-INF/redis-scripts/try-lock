@@ -1,0 +1,6 @@
+if (redis.call('setnx', KEYS[1], ARGV[1]) < 1)
+then
+    return 0;
+    end;
+redis.call('expire', KEYS[1], tonumber(ARGV[2]));
+return 1;

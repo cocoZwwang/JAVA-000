@@ -6,7 +6,6 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.exceptions.JedisExhaustedPoolException;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -15,6 +14,8 @@ import java.util.Collections;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 
 public class JedisOperator implements RedisOperator {
 
@@ -24,44 +25,62 @@ public class JedisOperator implements RedisOperator {
 
     private final static Long ACQUIRE_JEDIS_TIME_OUT = 100L;
 
-    private static final String LOCK_SCRIPT = "if (redis.call('setnx',KEYS[1],ARGV[1]) < 1) " +
-            "then return 0; end;" +
-            "redis.call('expire',KEYS[1],tonumber(ARGV[2])); return 1;";
+    private final String LOCK_SCRIPT;
 
-    private static final String UN_LOCK_SCRIPT = "if (redis.call('get', KEYS[1]) == ARGV[1])\n" +
-            "then return redis.call('del', KEYS[1])\n" +
-            "else return 0\n" +
-            "end";
+    private final String UN_LOCK_SCRIPT;
 
-    private static final String INCRBY_TOP_LIMIT_SCRIPT =
-            "if (redis.call('exists', KEYS[1]) == 0 or (tonumber(redis.call('get', KEYS[1]) + tonumber(ARGV[1])) <= tonumber(ARGV[2])))\n" +
-                    "then return redis.call('incrby', KEYS[1], ARGV[1]);\n" +
-                    "else return nil; end;";
+    private final String REENTRANT_LOCK_SCRIPT;
 
-    private static final String DECRBY_TOP_LIMIT_SCRIPT =
-            "if (redis.call('exists', KEYS[1]) == 0 or (tonumber(redis.call('get', KEYS[1]) - tonumber(ARGV[1])) >= tonumber(ARGV[2])))\n" +
-                    "then return redis.call('decrby', KEYS[1], ARGV[1]);\n" +
-                    "else return nil; end;";
+    private final String UN_REENTRANT_LOCK_SCRIPT;
+
+    private final String INCRBY_TOP_LIMIT_SCRIPT;
+
+    private final String DECRBY_TOP_LIMIT_SCRIPT;
 
     public JedisOperator(JedisPool jedisPool) {
         this.jedisPool = jedisPool;
+        LOCK_SCRIPT = readScript("/META-INF/redis-scripts/try-lock");
+        UN_LOCK_SCRIPT = readScript("/META-INF/redis-scripts/un-lock");
+        REENTRANT_LOCK_SCRIPT = readScript("/META-INF/redis-scripts/try-reentrant-lock");
+        UN_REENTRANT_LOCK_SCRIPT = readScript("/META-INF/redis-scripts/try-reentrant-lock");
+        INCRBY_TOP_LIMIT_SCRIPT = readScript("/META-INF/redis-scripts/incrby-top-limit");
+        DECRBY_TOP_LIMIT_SCRIPT = readScript("/META-INF/redis-scripts/decrby-top-limit");
+
     }
 
     /**
      * 尝试获取分布式锁
      */
-    public Boolean tryLock(String key, String keyId, Long timeOut, TimeUnit timeUnit) {
+    public Boolean tryLock(String key, String keyId, Long exTime, TimeUnit timeUnit) {
         Jedis jedis = acquireJedis();
         if (jedis != null) {
             try {
-                Object eval = jedis.eval(LOCK_SCRIPT, Collections.singletonList(key),
-                        Arrays.asList(keyId, timeUnit.toSeconds(timeOut) + ""));
-                return eval != null && "1".equals(eval.toString());
+                Object eval = jedis.eval(REENTRANT_LOCK_SCRIPT, Collections.singletonList(key),
+                        Arrays.asList(keyId, timeUnit.toSeconds(exTime) + ""));
+                return eval != null;
             } finally {
                 jedis.close();
             }
         }
         return false;
+    }
+
+    @Override
+    public Boolean tryLock(final String key, final String keyId, final Long exTime, final TimeUnit exTimeUnit,
+                           final Long tryTimeOut, final TimeUnit tryTimeOutUnit) {
+        return tryLock(key, keyId, exTimeUnit.toMillis(exTime), tryTimeOutUnit.toMillis(tryTimeOut));
+    }
+
+    @Override
+    public Boolean tryLock(final String key, final String keyId, final Long exTimeMills, final Long tryTimeOutMills) {
+        final AtomicInteger count = new AtomicInteger();
+        Boolean result = tryApply(o -> {
+            if (!tryLock(key, keyId, exTimeMills, TimeUnit.MILLISECONDS)) {
+                throw new RuntimeException("try lock failed " + count.incrementAndGet());
+            }
+            return true;
+        }, null, tryTimeOutMills);
+        return result != null && result;
     }
 
     /**
@@ -223,25 +242,30 @@ public class JedisOperator implements RedisOperator {
     }
 
     private Jedis acquireJedis() {
-        long endTime = System.currentTimeMillis() + ACQUIRE_JEDIS_TIME_OUT;
-        do {
+        return tryApply(o -> {
+            Jedis jedis = jedisPool.getResource();
+            if (jedis == null) {
+                throw new NullPointerException("jedis is null");
+            }
+            return jedis;
+        },null,ACQUIRE_JEDIS_TIME_OUT);
+    }
+
+    private <T,R> R tryApply(Function<T,R> function,T t, long timeOut){
+        long endTime = System.currentTimeMillis() + timeOut;
+        do{
             try {
-                Jedis jedis = jedisPool.getResource();
-                if (jedis != null) {
-                    return jedis;
-                }
-            } catch (JedisExhaustedPoolException e) {
+                return function.apply(t);
+            } catch (Exception e) {
                 logger.trace(e.getMessage());
             }
-        } while (System.currentTimeMillis() < endTime);
+        }while (System.currentTimeMillis() < endTime);
         return null;
     }
 
-    private String readScript(String scriptPath) {
-        String classFilePath = this.getClass().getResource("/").getPath();
-        String packagePath = this.getClass().getPackage().getName().replace(".","/");
-        String path = classFilePath + "/" + packagePath +"/" + scriptPath;
-        try (FileInputStream fis = new FileInputStream(new File(path));
+    private static String readScript(String scriptPath) {
+        String path = JedisOperator.class.getResource(scriptPath).getPath();
+        try (FileInputStream fis = new FileInputStream(path);
              Scanner scanner = new Scanner(new InputStreamReader(fis, StandardCharsets.UTF_8));
         ){
             StringBuilder sb = new StringBuilder();
@@ -256,4 +280,9 @@ public class JedisOperator implements RedisOperator {
             throw new RuntimeException("JedisOperator init script error: " + e.getMessage());
         }
     }
+
+//    public static void main(String[] args) {
+//        String scripts = readScript("/META-INF/redis-scripts/try-lock");
+//        System.out.println(scripts);
+//    }
 }

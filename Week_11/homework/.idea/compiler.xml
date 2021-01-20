@@ -6,10 +6,10 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="order-demo" />
         <module name="redis-operator-test" />
         <module name="redis-operator-core" />
         <module name="redis-operator-spring-boot-starter" />
+        <module name="order-demo" />
       </profile>
     </annotationProcessing>
   </component>
