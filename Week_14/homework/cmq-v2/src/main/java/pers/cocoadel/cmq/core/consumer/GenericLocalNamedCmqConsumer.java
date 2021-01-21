@@ -21,8 +21,9 @@ public class GenericLocalNamedCmqConsumer<T> extends CmqConsumerSupport<T> {
     }
 
     @Override
-    public void subscribe(String topic) {
+    public boolean subscribe(String topic) {
         this.cmq = broker.findMq(topic);
+        return true;
     }
 
     @Override
@@ -51,9 +52,10 @@ public class GenericLocalNamedCmqConsumer<T> extends CmqConsumerSupport<T> {
     }
 
     @Override
-    public void commit() {
+    public boolean commit() {
         if (cmq != null) {
             cmq.commit(getName());
         }
+        return true;
     }
 }

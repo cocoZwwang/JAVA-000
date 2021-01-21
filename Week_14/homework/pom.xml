@@ -13,9 +13,9 @@
         <module>cmq-core</module>
         <module>cmq-v2</module>
         <module>cmq-v3</module>
-        <module>cmq-v3/cmq-v3-client</module>
-        <module>cmq-v3/cmq-client</module>
-        <module>cmq-v3/cmq-server</module>
+        <module>cmq-v4</module>
+        <module>cmq-exchange</module>
+        <module>cmq-test</module>
     </modules>
 
     <properties>

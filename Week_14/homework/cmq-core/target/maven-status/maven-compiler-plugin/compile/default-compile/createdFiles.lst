@@ -1,0 +1,17 @@
+pers\cocoadel\cmq\core\message\CmqMessageHeaders.class
+pers\cocoadel\cmq\core\mq\Cmq.class
+pers\cocoadel\cmq\core\mq\LocalBlockingQueueCmq.class
+pers\cocoadel\cmq\core\consumer\GenericLocalCmqConsumer.class
+pers\cocoadel\cmq\core\broker\CmqBrokerSupport.class
+pers\cocoadel\cmq\core\producer\GenericLocalCmqProducer.class
+pers\cocoadel\cmq\core\broker\LocalMapCmqBroker.class
+pers\cocoadel\cmq\core\consumer\CmqConsumer.class
+pers\cocoadel\cmq\core\broker\CmqBroker.class
+pers\cocoadel\cmq\core\producer\CmqProducer.class
+pers\cocoadel\cmq\core\message\CmqMessage.class
+pers\cocoadel\cmq\core\mq\CmqSupport.class
+pers\cocoadel\cmq\core\test\OrderTestDemo.class
+pers\cocoadel\cmq\core\test\Order.class
+pers\cocoadel\cmq\core\message\GenericCmqMessage.class
+pers\cocoadel\cmq\core\spi\ObjectFactory.class
+pers\cocoadel\cmq\core\consumer\CmqConsumerSupport.class

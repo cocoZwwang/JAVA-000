@@ -6,8 +6,8 @@ import pers.cocoadel.cmq.core.message.CmqMessage;
 public class CmqConsumerSupport<T> implements CmqConsumer<T> {
 
     @Override
-    public void subscribe(String topic) {
-
+    public boolean subscribe(String topic) {
+        return false;
     }
 
     @Override
@@ -21,8 +21,8 @@ public class CmqConsumerSupport<T> implements CmqConsumer<T> {
     }
 
     @Override
-    public void commit() {
-
+    public boolean commit() {
+        return false;
     }
 
     @Override

@@ -6,13 +6,13 @@ import pers.cocoadel.cmq.core.message.CmqMessage;
 
 public interface CmqConsumer<T> {
 
-    void subscribe(String topic);
+    boolean subscribe(String topic);
 
     CmqMessage<T> poll();
 
     CmqMessage<T> poll(long timeOutMills);
 
-    void commit();
+    boolean commit();
 
     String getName();
 

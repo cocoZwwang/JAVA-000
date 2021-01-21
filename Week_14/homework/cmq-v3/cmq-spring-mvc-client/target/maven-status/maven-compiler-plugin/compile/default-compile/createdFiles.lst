@@ -1,0 +1,4 @@
+pers\cocoadel\cmq\client\spring\CmqTopicConnection.class
+pers\cocoadel\cmq\client\spring\GenericClientCmqProducer.class
+pers\cocoadel\cmq\client\spring\HttpClientUtil.class
+pers\cocoadel\cmq\client\spring\GenericClientCmqConsumer.class

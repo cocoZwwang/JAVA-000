@@ -2,17 +2,26 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
       <profile name="Maven default annotation processors profile" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="cmq-server" />
         <module name="cmq-v2" />
-        <module name="cmq-client" />
+        <module name="cmq-netty-server" />
+        <module name="cmq-exchange" />
+        <module name="cmq-spring-mvc-client" />
+        <module name="cmq-test" />
+        <module name="cmq-netty-client" />
         <module name="cmq-core" />
+        <module name="cmq-spring-mvc-server" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="cmq-client" target="1.8" />
+      <module name="cmq-comm" target="1.8" />
+      <module name="cmq-server" target="1.8" />
+      <module name="cmq-springMVC" target="1.8" />
       <module name="cmq-v3-client" target="1.8" />
     </bytecodeTargetLevel>
   </component>

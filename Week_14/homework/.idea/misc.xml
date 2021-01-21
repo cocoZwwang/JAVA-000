@@ -9,6 +9,10 @@
     </option>
     <option name="ignoredFiles">
       <set>
+        <option value="$PROJECT_DIR$/cmq-v3/cmq-client/pom.xml" />
+        <option value="$PROJECT_DIR$/cmq-v3/cmq-comm/pom.xml" />
+        <option value="$PROJECT_DIR$/cmq-v3/cmq-server/pom.xml" />
+        <option value="$PROJECT_DIR$/cmq-v3/cmq-springMVC/pom.xml" />
         <option value="$PROJECT_DIR$/cmq-v3/cmq-v3-client/pom.xml" />
       </set>
     </option>

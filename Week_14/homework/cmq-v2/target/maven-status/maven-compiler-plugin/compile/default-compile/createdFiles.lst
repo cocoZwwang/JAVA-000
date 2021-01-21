@@ -1,0 +1,6 @@
+pers\cocoadel\cmq\core\broker\LocalMapAndConsumerKeyCmqBroker.class
+pers\cocoadel\cmq\core\broker\LocalMapAndConsumerKeyCmqBroker$ConsumerKey.class
+pers\cocoadel\cmq\core\mq\ArrayMessageCmq.class
+pers\cocoadel\cmq\core\mq\MessageNode.class
+pers\cocoadel\cmq\core\consumer\GenericLocalNamedCmqConsumer.class
+pers\cocoadel\cmq\core\test\OrderTestDemoV2.class

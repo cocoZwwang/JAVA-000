@@ -24,8 +24,9 @@ public class GenericLocalCmqConsumer<T> extends CmqConsumerSupport<T> {
     }
 
     @Override
-    public void subscribe(String topic) {
+    public boolean subscribe(String topic) {
         cmq = broker.findMq(topic);
+        return true;
     }
 
     @Override

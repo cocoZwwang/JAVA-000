@@ -2,12 +2,14 @@ package pers.cocoadel.cmq.core.message;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 
 @Data
 @ToString
 @AllArgsConstructor
+@NoArgsConstructor
 public class GenericCmqMessage<T> implements CmqMessage<T> {
     private CmqMessageHeaders cmqMessageHeaders = new CmqMessageHeaders();
 
