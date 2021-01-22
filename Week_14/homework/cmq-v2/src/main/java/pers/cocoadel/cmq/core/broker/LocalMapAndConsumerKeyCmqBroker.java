@@ -34,9 +34,6 @@ public class LocalMapAndConsumerKeyCmqBroker extends CmqBrokerSupport {
 
     @Override
     public Cmq findMq(String topic) {
-        if(!map.containsKey(topic)){
-            createTopic(topic);
-        }
         return map.get(topic);
     }
 

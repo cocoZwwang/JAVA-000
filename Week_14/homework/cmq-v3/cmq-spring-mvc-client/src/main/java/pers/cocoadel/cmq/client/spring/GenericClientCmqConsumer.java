@@ -14,6 +14,7 @@ import pers.cocoadel.cmq.core.message.CmqMessage;
 import pers.cocoadel.cmq.core.message.GenericCmqMessage;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -51,7 +52,7 @@ public class GenericClientCmqConsumer<T> extends CmqConsumerSupport<T> {
             if (response.isSuccessful()) {
                 return true;
             }
-            log.error(response.message()+ ":" + Objects.requireNonNull(response.body()).string());
+            log.error(response.message() + ":" + Objects.requireNonNull(response.body()).string());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -61,23 +62,26 @@ public class GenericClientCmqConsumer<T> extends CmqConsumerSupport<T> {
 
     @Override
     public CmqMessage<T> poll() {
-        PollRequestBody requestBody = new PollRequestBody(token,topic, groupId);
+        PollRequestBody requestBody = new PollRequestBody(token, topic, groupId);
         try {
             Response response = HttpClientUtil.post(requestBody, url + "/poll");
             if (response.isSuccessful() && response.body() != null) {
                 String content = response.body().string();
                 PollResponseBody body = JSON.parseObject(content, PollResponseBody.class);
-                List<GenericCmqMessage<String>> messageList = body.getCmqMessages()
-                        .stream()
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toList());
+                List<GenericCmqMessage<String>> messageList = body.getCmqMessages() == null ? Collections.emptyList() :
+                        body.getCmqMessages()
+                                .stream()
+                                .filter(Objects::nonNull)
+                                .collect(Collectors.toList());
                 if (messageList.size() > 0) {
                     GenericCmqMessage<String> jsonMessage = messageList.get(0);
                     String json = jsonMessage.getBody();
                     return new GenericCmqMessage<>(jsonMessage.getHeaders(), JSON.parseObject(json, tClass));
+                }else{
+                    log.trace("no message!");
                 }
-            }else {
-                log.error(response.message()+ ":" + Objects.requireNonNull(response.body()).string());
+            } else {
+                log.error(response.message() + ":" + Objects.requireNonNull(response.body()).string());
             }
         } catch (Exception e) {
             log.error(e.getMessage());

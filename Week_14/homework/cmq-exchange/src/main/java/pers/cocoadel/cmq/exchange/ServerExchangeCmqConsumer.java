@@ -17,8 +17,8 @@ public class ServerExchangeCmqConsumer extends ExchangeCmqConsumer<String> {
     public void subscribe(CommRequestBody requestBody) {
         requestBody.check();
         try {
-            CmqConsumer<String> consumer = createConsumer(requestBody.getTopic(),requestBody.getToken());
             cmqBroker.createTopic(requestBody.getTopic());
+            CmqConsumer<String> consumer = createConsumer(requestBody.getTopic(),requestBody.getToken());
             consumer.subscribe(requestBody.getTopic());
         } catch (Exception e) {
             throw CmqOperationException.createServerErrorException(e);

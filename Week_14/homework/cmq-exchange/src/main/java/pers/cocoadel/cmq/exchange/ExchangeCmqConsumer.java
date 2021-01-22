@@ -14,10 +14,15 @@ import java.util.stream.Collectors;
 public abstract class ExchangeCmqConsumer<T> {
     protected CmqBroker cmqBroker;
 
+    protected boolean autoCreateTopic = true;
+
     private final Map<ConsumerKey, CmqConsumer<T>> localConsumerMap = new ConcurrentHashMap<>();
 
     protected CmqConsumer<T> createConsumer(String topic,String token) {
         ConsumerKey key = new ConsumerKey(token,topic,null);
+        if (cmqBroker.findMq(topic) == null && autoCreateTopic) {
+            cmqBroker.createTopic(topic);
+        }
         return localConsumerMap.computeIfAbsent(key,k-> cmqBroker.createConsumer(topic, key.toString()));
     }
 

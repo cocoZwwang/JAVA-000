@@ -30,7 +30,7 @@
 - 1）将Queue保存到web server端  (完成)
 - 2）设计消息读写API接口，确认接口，提交offset接口  (完成)
 - 3）producer和consumer通过httpclient访问Queue  (完成)
-- 4）实现消息确认，offset提交  (未完成)
+- 4）实现消息确认，offset提交  (完成)
 - 5）实现consumer从offset增量拉取  (未完成)
 
 [cmq-exchange](https://github.com/cocoZwwang/JAVA-000/tree/main/Week_14/homework/cmq-exchange)：协议通信和本地mq服务的交换层
