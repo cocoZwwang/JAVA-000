@@ -9,6 +9,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="cmq-v2" />
         <module name="cmq-netty-server" />
+        <module name="cmq-netty-comm" />
         <module name="cmq-exchange" />
         <module name="cmq-spring-mvc-client" />
         <module name="cmq-test" />

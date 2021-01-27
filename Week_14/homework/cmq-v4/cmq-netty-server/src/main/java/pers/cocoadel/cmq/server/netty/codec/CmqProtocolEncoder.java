@@ -3,7 +3,7 @@ package pers.cocoadel.cmq.server.netty.codec;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageEncoder;
-import pers.cocoadel.cmq.server.netty.comm.StreamResponse;
+import pers.cocoadel.cmq.netty.comm.StreamResponse;
 
 import java.util.List;
 

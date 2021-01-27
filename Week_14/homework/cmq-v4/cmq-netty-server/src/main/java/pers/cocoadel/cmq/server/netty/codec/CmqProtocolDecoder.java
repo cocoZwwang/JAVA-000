@@ -5,8 +5,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import lombok.extern.slf4j.Slf4j;
 import pers.cocoadel.cmq.comm.enums.ResponseStatus;
-import pers.cocoadel.cmq.server.netty.comm.ByteStreamRequest;
-import pers.cocoadel.cmq.server.netty.comm.StreamResponse;
+import pers.cocoadel.cmq.netty.comm.ByteStreamRequest;
+import pers.cocoadel.cmq.netty.comm.StreamResponse;
 
 import java.util.List;
 

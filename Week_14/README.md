@@ -39,3 +39,26 @@
 
 测试：[cmq-test](https://github.com/cocoZwwang/JAVA-000/tree/main/Week_14/homework/cmq-test)
 
+#### 第四个版本：功能完善MQ
+
+增加多种策略（各条之间没有关系，可以任意选择实现）
+
+- 1）考虑实现消息过期，消息重试，消息定时投递等策略
+
+- 2）考虑批量操作，包括读写，可以打包和压缩
+
+- 3）考虑消息清理策略，包括定时清理，按容量清理、LRU等
+
+- 4）考虑消息持久化，存入数据库，或WAL日志文件，或BookKeeper
+
+- 5）考虑将spring mvc替换成netty下的tcp传输协议，rsocket/websocket
+
+  - 实现 将spring mvc替换成netty下的tcp传输协议
+
+  - 添加服务空闲连接检测：服务器一定时间秒数内（比如10s）接受不到channel的请求就断掉
+
+  - 客户端加上write idle check + keeplive ： 客户端一定时间内（比如：5s）不发送数据就发送一个keeplive，保证客户端连接的不被断。
+
+  - 添加账号密码认证
+
+    
