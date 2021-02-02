@@ -18,7 +18,7 @@ public class ArrayMessageCmq extends CmqSupport {
 
     private int maxCapacity;
 
-    private final Map<String, Integer> consumerOffsetMap = new ConcurrentHashMap<>();
+    private final Map<String, Long> consumerOffsetMap = new ConcurrentHashMap<>();
 
     public ArrayMessageCmq() {
 
@@ -41,7 +41,7 @@ public class ArrayMessageCmq extends CmqSupport {
 
     @Override
     public CmqMessage<?> poll(String consumer) {
-        int offsetRead = consumerOffsetMap.computeIfAbsent(consumer, k -> 0);
+        int offsetRead = Math.toIntExact(consumerOffsetMap.computeIfAbsent(consumer, k -> 0L));
         if (offsetRead >= offsetWrite) {
             return null;
         }
@@ -49,7 +49,7 @@ public class ArrayMessageCmq extends CmqSupport {
     }
 
     @Override
-    public void setOffset(String consumer, int offset) {
+    public void setOffset(String consumer, long offset) {
         if (offset >= offsetWrite) {
             throw new IndexOutOfBoundsException("offset is out of size of messages");
         }

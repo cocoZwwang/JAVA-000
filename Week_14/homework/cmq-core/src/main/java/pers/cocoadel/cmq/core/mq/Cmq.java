@@ -3,6 +3,8 @@ package pers.cocoadel.cmq.core.mq;
 
 import pers.cocoadel.cmq.core.message.CmqMessage;
 
+import java.util.List;
+
 public interface Cmq  {
     boolean send(CmqMessage<?> message);
 
@@ -14,9 +16,13 @@ public interface Cmq  {
 
     CmqMessage<?> poll(String consumer,long timeOutMills);
 
+    List<CmqMessage<?>> poll(String consumer, int count);
+
+    List<CmqMessage<?>> poll(String consumer, int count,long timeOutMills);
+
     void commit(String consumer);
 
-    void setOffset(String consumer, int offset);
+    void setOffset(String consumer, long offset);
 
     void init(String topic, int capacity);
 }

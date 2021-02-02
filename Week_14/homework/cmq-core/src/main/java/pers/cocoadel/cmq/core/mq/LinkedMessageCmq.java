@@ -2,6 +2,9 @@ package pers.cocoadel.cmq.core.mq;
 
 import pers.cocoadel.cmq.core.message.CmqMessage;
 
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 
@@ -19,6 +22,8 @@ public class LinkedMessageCmq extends CmqSupport {
 
     private final Map<String, MessageNode> consumerOffsetMap = new ConcurrentHashMap<>();
 
+    private final Map<String, MessageNode> readOffsetMap = new ConcurrentHashMap<>();
+
     public LinkedMessageCmq() {
     }
 
@@ -32,7 +37,7 @@ public class LinkedMessageCmq extends CmqSupport {
     }
 
     @Override
-    public boolean send(CmqMessage<?> message) {
+    public synchronized boolean send(CmqMessage<?> message) {
         if (offsetWrite >= capacity) {
             throw new RuntimeException("capacity is full!");
         }
@@ -47,18 +52,41 @@ public class LinkedMessageCmq extends CmqSupport {
 
     @Override
     public CmqMessage<?> poll(String consumer) {
-        MessageNode offset = consumerOffsetMap.computeIfAbsent(consumer,k -> head.getNext());
-        return offset == tail ? null : offset.getMessage();
+        MessageNode offset = consumerOffsetMap.computeIfAbsent(consumer,key -> head.getNext());
+        if (offset == tail) {
+            return null;
+        }
+        readOffsetMap.put(consumer, offset);
+        return offset.getMessage();
+    }
+
+    @Override
+    public List<CmqMessage<?>> poll(String consumer, int count,long timeOutMills) {
+        MessageNode prev = consumerOffsetMap.computeIfAbsent(consumer,key -> head.getNext());
+        while (prev == null) {
+
+        }
+        if (prev == tail) {
+            return Collections.emptyList();
+        }
+        List<CmqMessage<?>> result = new LinkedList<>();
+        int c = 0;
+        MessageNode curr = prev;
+        while (c++ < count && curr != tail) {
+            result.add(curr.getMessage());
+            curr = curr.getNext();
+        }
+        readOffsetMap.put(consumer, curr.getPrev());
+        return result;
     }
 
     @Override
     public void commit(String consumer) {
+        MessageNode readOffset = readOffsetMap.get(consumer);
         if (consumerOffsetMap.containsKey(consumer)) {
-            MessageNode node = consumerOffsetMap.get(consumer);
-            if (consumerOffsetMap.get(consumer) != tail) {
-                consumerOffsetMap.put(consumer, node.getNext());
-            }
+            consumerOffsetMap.put(consumer, readOffset);
         }
+        readOffsetMap.remove(consumer);
     }
 }
 
