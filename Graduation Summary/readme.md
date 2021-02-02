@@ -10,7 +10,13 @@
 
 ## JVM
 
-JVM 主要包括 JVM 和 字节码技术，这涉及到 java 语言的底层实现和运行环境。字节码只要使用场景是开发，尤其涉及到 AOP 的实现上，而 JVM 知识则更多是用在运行环境的性能调优上，其中 GC 算法 和 GC 日志分析是重中之重。
+JVM 主要包括 JVM 和 字节码技术，这涉及到 java 语言的底层实现和运行环境。相对于其他 热门技术，JVM相关技术在工作中直接使用的机会不会很多，但是如果对于想进阶的程序员来说，这是一项必须掌握的技术，同时也是大厂面试中的重点。
+
+重点掌握：
+
+- 字节码：了解字节码基本指令；掌握一个以上有名字节码工具的使用，比如：CGlib、Javassist等
+
+字节码只要使用场景是开发，尤其涉及到 AOP 的实现上，而 JVM 知识则更多是用在运行环境的性能调优上，其中 GC 算法 和 GC 日志分析是重中之重。
 
 #### JVM基础
 
@@ -58,17 +64,50 @@ JVM 主要包括 JVM 和 字节码技术，这涉及到 java 语言的底层实�
 
 #### JMM
 
+- 了解 JMM 模型
+- 了解 happen-before 原则；了解重排序和顺序一致性；掌握 volatile 和 finnal 的语义。
+
 #### 锁
+
+- 锁的概念
+  - 锁的类型：重入锁；公平锁；非公平锁；排它锁；共享锁。
+  - 锁的优化：自旋锁；轻量级锁；重量级锁；偏向锁。
+- Lock
+  - 模板类：AbstractQueuedSynchronizer（AQS）。
+  - LockSupport；Condition；ReadWriteLock；Synchroized；Wait。
 
 #### 原子类
 
+原子基本类型类；原子数组；原子引用类型；原子字段；LongAdder。
+
 #### 线程协作工具
+
+- 等待多线程完成：CountDownLatch
+- 同步屏障：CyclicBarrier
+- 信号量：Semaphore
 
 #### 线程安全集合类
 
+- 非线程安全：ArrayList；LinkedList；HashMap；LinkedHashMap等。
+- 线程安全：CopyOnWriteArrayList；ConcurrentHashMap；ThreadLocal等。
+
 #### 线程池
 
+- Executer 接口。
+- ExecutorService（接口）：Executer 的子接口。
+- Excutors：ExecutorService 工厂类。
+- ThreadPoolExecutor 的使用和各个参数的意义。
+- Future、Callable、Runnable 的区别和用法。
+
 ## Spring 和 ORM
+
+#### spring framework
+
+![](./images/Springframework.png)
+
+#### spring boot
+
+#### ORM
 
 ## MySQL 数据库和 SQL
 
