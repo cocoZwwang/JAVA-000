@@ -55,7 +55,7 @@ JVM 主要包括 JVM 和 字节码技术，这涉及到 java 语言的底层实�
 
 #### API 网关设计
 
-![](./images/API Gateway.png)
+![](./images/API-Gateway.png)
 
 ## 并发编程
 
@@ -144,11 +144,35 @@ JVM 主要包括 JVM 和 字节码技术，这涉及到 java 语言的底层实�
 
 ## 分布式缓存
 
+#### 缓存
 
+![](./images/cache.png)
+
+#### Redis
+
+![](./images/redis.png)
+
+#### 分布式缓存
+
+![](./images/distributed-cache.png)
 
 ## 分布式消息队列
 
+#### 消息队列基础
 
+![](./images/message-base.png)
+
+#### Kafka
+
+![](./images/kafka.png)
+
+#### 其他MQ
+
+![](./images/other Mq.png)
+
+# 分布式系统架构
+
+![](./images/High-concurrency-system.png)
 
 
 
