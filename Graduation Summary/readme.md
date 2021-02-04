@@ -122,7 +122,7 @@ JVM 主要包括 JVM 和 字节码技术，这涉及到 java 语言的底层实�
 
 #### MySQL 集群
 
-![](./images/Mysql Cluster.png)
+![](./images/Mysql-Cluster.png)
 
 ## 分库分表
 
