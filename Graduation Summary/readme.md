@@ -108,7 +108,7 @@ JVM 主要包括 JVM 和 字节码技术，这涉及到 java 语言的底层实�
 
 #### spring boot
 
-![](./images/spring boot.png)
+![](./images/spring-boot.png)
 
 #### ORM
 
