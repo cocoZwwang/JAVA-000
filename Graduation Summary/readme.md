@@ -21,27 +21,19 @@ JVM 主要包括 JVM 和 字节码技术，这涉及到 java 语言的底层实�
 
 #### JVM基础
 
-​	<img src="./images/jvm2.png" style="zoom:75%;" />
+![](./images/jvm2.png)
 
 #### JVM对象
 
-<img src="./images/jvm1.png" style="zoom:75%;" />
+![](./images/jvm1.png)
 
 #### 字节码
 
-- 指令
-
-<img src="./images/jvm3.png" style="zoom:75%;" />
-
-- 线程栈和字节码的执行模型
-
-  <img src="./images/jvm4.png" style="zoom:75%;" />
+![](./images/jvm3.png)
 
 #### GC
 
-<img src="./images/jvm5.png" style="zoom:75%;" />
-
-
+![](./images/jvm5.png)
 
 ## NIO
 
@@ -49,11 +41,11 @@ NIO 现在已经逐渐称为了 java 网络编程的主流，对于这部分知�
 
 #### NIO 介绍
 
-<img src="./images/NIO1.png" style="zoom:75%;" />
+![](./images/NIO1.png)
 
 #### Netty
 
-<img src="./images/Netty.png" style="zoom:75%;" />
+![](./images/Netty.png)
 
 #### API 网关设计
 
@@ -116,7 +108,7 @@ java 是一门面向对象的语言，也是一门“面向 Spring” 的语言�
 
 #### ORM
 
-![](./images/Springframework.png)
+![](./images/orm-jdbc.png)
 
 ## MySQL 数据库和 SQL
 
