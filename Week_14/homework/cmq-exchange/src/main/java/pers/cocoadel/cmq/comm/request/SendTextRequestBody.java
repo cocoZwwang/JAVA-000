@@ -3,30 +3,25 @@ package pers.cocoadel.cmq.comm.request;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import pers.cocoadel.cmq.comm.enums.ResponseStatus;
-import pers.cocoadel.cmq.comm.exception.CmqOperationException;
+import pers.cocoadel.cmq.core.message.Describe;
 import pers.cocoadel.cmq.core.message.GenericCmqMessage;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
-public class SendTextRequestBody extends CommRequestBody {
+public class SendTextRequestBody extends ProducerRequestBody {
 
     private GenericCmqMessage<String> body;
 
-    public SendTextRequestBody(String token, String topic, String groupId) {
-        super(token, topic, groupId);
+    public SendTextRequestBody(Describe describe) {
+        super(describe);
     }
 
     @Override
-    public boolean check() {
+    public void check() {
         super.check();
-        if (body == null) {
-            CmqOperationException exception =
-                    CmqOperationException.createCmqOperationException(ResponseStatus.REQUEST_ERROR);
-            exception.setMessage("body is null");
-            throw exception;
-        }
-        return true;
+        checkNotNull(body);
     }
 }

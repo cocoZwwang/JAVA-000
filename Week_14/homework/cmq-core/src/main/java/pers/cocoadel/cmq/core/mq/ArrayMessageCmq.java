@@ -1,9 +1,9 @@
 package pers.cocoadel.cmq.core.mq;
 
+import com.google.common.collect.ImmutableList;
 import pers.cocoadel.cmq.core.message.CmqMessage;
 
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -11,10 +11,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * 2）使用指针记录当前消息写入位置。
  * 3）对于每个命名消费者，用指针记录消费位置。
  */
-public class ArrayMessageCmq extends CmqSupport {
+public class ArrayMessageCmq implements Cmq {
     private CmqMessage<?>[] array;
 
-    private int offsetWrite = 0;
+    private int offsetWriteable = 0;
 
     private int maxCapacity;
 
@@ -32,25 +32,43 @@ public class ArrayMessageCmq extends CmqSupport {
 
     @Override
     public boolean send(CmqMessage<?> message) {
-        if (offsetWrite == maxCapacity) {
+        if (offsetWriteable == maxCapacity) {
             return false;
         }
-        array[offsetWrite++] = message;
+        array[offsetWriteable++] = message;
         return true;
     }
 
     @Override
-    public CmqMessage<?> poll(String consumer) {
+    public CmqMessage<?> pollNow() {
+        if (offsetWriteable == 0) {
+            return null;
+        }
+        return array[offsetWriteable - 1];
+    }
+
+    @Override
+    public CmqMessage<?> pollNow(String consumer) {
         int offsetRead = Math.toIntExact(consumerOffsetMap.computeIfAbsent(consumer, k -> 0L));
-        if (offsetRead >= offsetWrite) {
+        if (offsetRead >= offsetWriteable) {
             return null;
         }
         return array[offsetRead];
     }
 
     @Override
+    public List<CmqMessage<?>> pollNow(String consumer, int count) {
+        int offsetRead = Math.toIntExact(consumerOffsetMap.computeIfAbsent(consumer, k -> 0L));
+        if (offsetRead >= offsetWriteable) {
+            return Collections.emptyList();
+        }
+        List<CmqMessage<?>> list = Arrays.asList(array).subList(offsetRead, offsetWriteable);
+        return ImmutableList.copyOf(list);
+    }
+
+    @Override
     public void setOffset(String consumer, long offset) {
-        if (offset >= offsetWrite) {
+        if (offset >= offsetWriteable) {
             throw new IndexOutOfBoundsException("offset is out of size of messages");
         }
         if (!consumerOffsetMap.containsKey(consumer)) {
@@ -67,7 +85,7 @@ public class ArrayMessageCmq extends CmqSupport {
     @Override
     public void commit(String consumer) {
         if (consumerOffsetMap.containsKey(consumer)) {
-            if (consumerOffsetMap.get(consumer) < offsetWrite) {
+            if (consumerOffsetMap.get(consumer) < offsetWriteable) {
                 consumerOffsetMap.put(consumer, consumerOffsetMap.get(consumer) + 1);
             }
         }

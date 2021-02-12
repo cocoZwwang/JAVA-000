@@ -1,7 +1,7 @@
 package pers.cocoadel.cmq.core.consumer;
 
-import pers.cocoadel.cmq.core.broker.CmqBroker;
 import pers.cocoadel.cmq.core.message.CmqMessage;
+import java.util.List;
 
 public class CmqConsumerSupport<T> implements CmqConsumer<T> {
 
@@ -11,32 +11,17 @@ public class CmqConsumerSupport<T> implements CmqConsumer<T> {
     }
 
     @Override
-    public CmqMessage<T> poll() {
+    public CmqMessage<T> pollNow() {
         return null;
     }
 
     @Override
-    public CmqMessage<T> poll(long timeOutMills) {
+    public List<CmqMessage<T>> pollNow(int count) {
         return null;
     }
 
     @Override
     public boolean commit() {
         return false;
-    }
-
-    @Override
-    public String getName() {
-        return null;
-    }
-
-    @Override
-    public void setCmqBroker(CmqBroker cmqBroker){
-
-    }
-
-    @Override
-    public void setName(String name) {
-
     }
 }

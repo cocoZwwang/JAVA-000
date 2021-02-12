@@ -18,7 +18,7 @@ public class ConsumerDemo {
             consumer.subscribe("order.test");
             while (true) {
                 try {
-                    CmqMessage<Order> message = consumer.poll();
+                    CmqMessage<Order> message = consumer.pollNow();
                     if (message != null) {
                         System.out.println(message.getBody().toString());
                         //确认消费

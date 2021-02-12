@@ -4,10 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import pers.cocoadel.cmq.comm.request.AuthRequestBody;
-import pers.cocoadel.cmq.comm.request.CommRequestBody;
-import pers.cocoadel.cmq.comm.request.PollRequestBody;
-import pers.cocoadel.cmq.comm.request.SendTextRequestBody;
+import pers.cocoadel.cmq.comm.request.*;
 import pers.cocoadel.cmq.comm.response.AuthResponseBody;
 import pers.cocoadel.cmq.comm.response.PollResponseBody;
 import pers.cocoadel.cmq.exchange.ExchangeCmqConsumer;
@@ -34,12 +31,12 @@ public class CmqController {
 
     @PostMapping("/disconnect")
     public void unConnect(@RequestBody AuthRequestBody requestBody) {
-        producer.removeProducer(new ProducerKey(requestBody.getToken()));
-        consumer.removeConsumer(requestBody.getToken());
+//        producer.removeProducer(new ProducerKey(requestBody.getToken()));
+//        consumer.removeConsumer(requestBody.getToken());
     }
 
     @PostMapping("/subscribe")
-    public void subscribe(@RequestBody CommRequestBody requestBody) {
+    public void subscribe(@RequestBody ConsumerRequestBody requestBody) {
         consumer.subscribe(requestBody);
     }
 
@@ -54,7 +51,7 @@ public class CmqController {
     }
 
     @PostMapping("/commit")
-    public void commit(@RequestBody CommRequestBody requestBody) {
+    public void commit(@RequestBody ConsumerRequestBody requestBody) {
         consumer.commit(requestBody);
     }
 }

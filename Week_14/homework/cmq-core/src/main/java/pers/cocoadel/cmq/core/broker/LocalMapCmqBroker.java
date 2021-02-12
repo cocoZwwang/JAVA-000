@@ -1,16 +1,18 @@
 package pers.cocoadel.cmq.core.broker;
 
 
+import pers.cocoadel.cmq.core.consumer.AbstractCmqConsumer;
+import pers.cocoadel.cmq.core.message.Describe;
 import pers.cocoadel.cmq.core.consumer.CmqConsumer;
 import pers.cocoadel.cmq.core.mq.Cmq;
-import pers.cocoadel.cmq.core.mq.LocalBlockingQueueCmq;
+import pers.cocoadel.cmq.core.producer.AbstractCmqProducer;
 import pers.cocoadel.cmq.core.producer.CmqProducer;
 import pers.cocoadel.cmq.core.spi.ObjectFactory;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 
-public class LocalMapCmqBroker extends CmqBrokerSupport {
+public class LocalMapCmqBroker implements CmqBroker {
     private final static int MAX_MQ_COUNT = 64;
 
     private final static int MAX_MQ_CAPACITY = 1000;
@@ -34,19 +36,20 @@ public class LocalMapCmqBroker extends CmqBrokerSupport {
     }
 
     @Override
-    public <T> CmqConsumer<T> createConsumer() {
+    public <T> CmqConsumer<T> createConsumer(Describe describe) {
         CmqConsumer<?> consumer = ObjectFactory.createObject(CmqConsumer.class);
-        if (consumer != null) {
-            consumer.setCmqBroker(this);
+        if (consumer instanceof AbstractCmqConsumer) {
+            ((AbstractCmqConsumer<?>)consumer).setCmqBroker(this);
         }
         return (CmqConsumer<T>) consumer;
     }
 
+
     @Override
     public CmqProducer createProducer() {
         CmqProducer cmqProducer = ObjectFactory.createObject(CmqProducer.class);
-        if (cmqProducer != null) {
-            cmqProducer.setCmqBroker(this);
+        if (cmqProducer instanceof AbstractCmqProducer) {
+            ((AbstractCmqProducer)cmqProducer).setCmqBroker(this);
         }
         return cmqProducer;
     }

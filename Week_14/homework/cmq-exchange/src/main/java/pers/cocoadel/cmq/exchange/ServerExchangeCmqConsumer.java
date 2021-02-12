@@ -1,11 +1,12 @@
 package pers.cocoadel.cmq.exchange;
 
 import pers.cocoadel.cmq.comm.exception.CmqOperationException;
-import pers.cocoadel.cmq.comm.request.CommRequestBody;
+import pers.cocoadel.cmq.comm.request.ConsumerRequestBody;
 import pers.cocoadel.cmq.comm.request.PollRequestBody;
 import pers.cocoadel.cmq.comm.response.PollResponseBody;
 import pers.cocoadel.cmq.core.consumer.CmqConsumer;
 import pers.cocoadel.cmq.core.message.CmqMessage;
+import pers.cocoadel.cmq.core.message.Describe;
 import pers.cocoadel.cmq.core.message.GenericCmqMessage;
 
 import java.util.Collections;
@@ -14,12 +15,13 @@ import java.util.List;
 public class ServerExchangeCmqConsumer extends ExchangeCmqConsumer<String> {
 
     @Override
-    public void subscribe(CommRequestBody requestBody) {
+    public void subscribe(ConsumerRequestBody requestBody) {
         requestBody.check();
         try {
-            cmqBroker.createTopic(requestBody.getTopic());
-            CmqConsumer<String> consumer = createConsumer(requestBody.getTopic(),requestBody.getToken());
-            consumer.subscribe(requestBody.getTopic());
+            Describe describe = requestBody.getDescribe();
+            cmqBroker.createTopic(describe.getTopic());
+            CmqConsumer<String> consumer = createConsumer(describe);
+            consumer.subscribe(describe.getTopic());
         } catch (Exception e) {
             throw CmqOperationException.createServerErrorException(e);
         }
@@ -43,8 +45,9 @@ public class ServerExchangeCmqConsumer extends ExchangeCmqConsumer<String> {
     private List<GenericCmqMessage<String>> doPoll(PollRequestBody requestBody) {
         // todo 暂时先一次啦一条消息
         // todo 暂时还没处理 group id
-        CmqConsumer<String> consumer = createConsumer(requestBody.getTopic(),requestBody.getToken());
-        CmqMessage<String> cmqMessage = consumer.poll();
+        Describe describe = requestBody.getDescribe();
+        CmqConsumer<String> consumer = createConsumer(describe);
+        CmqMessage<String> cmqMessage = consumer.pollNow();
         if(cmqMessage == null){
             return null;
         }
@@ -53,11 +56,11 @@ public class ServerExchangeCmqConsumer extends ExchangeCmqConsumer<String> {
     }
 
     @Override
-    public void commit(CommRequestBody requestBody) {
+    public void commit(ConsumerRequestBody requestBody) {
         requestBody.check();
         //执行commit
         try {
-            CmqConsumer<String> consumer = createConsumer(requestBody.getTopic(),requestBody.getToken());
+            CmqConsumer<String> consumer = createConsumer(requestBody.getDescribe());
             consumer.commit();
         } catch (Exception e) {
             throw CmqOperationException.createServerErrorException(e);

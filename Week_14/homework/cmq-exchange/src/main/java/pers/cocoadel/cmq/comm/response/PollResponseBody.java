@@ -4,7 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import pers.cocoadel.cmq.comm.request.CommRequestBody;
+import pers.cocoadel.cmq.comm.request.ConsumerRequestBody;
+import pers.cocoadel.cmq.core.message.Describe;
 import pers.cocoadel.cmq.core.message.GenericCmqMessage;
 
 import java.util.List;
@@ -13,18 +14,20 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PollResponseBody extends CommResponseBody {
+public class PollResponseBody extends ConsumerResponseBody {
 
-    public PollResponseBody(String topic, String groupId) {
-        super(topic, groupId);
+    public PollResponseBody(String topic, String groupId,String consumerName) {
+        super(topic, groupId,consumerName);
     }
 
     private List<GenericCmqMessage<String>> cmqMessages;
 
-    public static PollResponseBody createPollResponseBody(CommRequestBody requestBody) {
+    public static PollResponseBody createPollResponseBody(ConsumerRequestBody requestBody) {
         PollResponseBody responseBody = new PollResponseBody();
-        responseBody.setTopic(requestBody.getTopic());
-        responseBody.setGroupId(requestBody.getGroupId());
+        Describe describe = requestBody.getDescribe();
+        responseBody.setTopic(describe.getTopic());
+        responseBody.setGroupId(describe.getGroupId());
+        responseBody.setConsumerName(describe.getName());
         return responseBody;
     }
 }

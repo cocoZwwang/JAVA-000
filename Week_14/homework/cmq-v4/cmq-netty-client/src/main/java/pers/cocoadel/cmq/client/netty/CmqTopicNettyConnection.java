@@ -3,7 +3,6 @@ package pers.cocoadel.cmq.client.netty;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import pers.cocoadel.cmq.comm.request.AuthRequestBody;
-import pers.cocoadel.cmq.comm.request.CommRequestBody;
 import pers.cocoadel.cmq.comm.response.AuthResponseBody;
 import pers.cocoadel.cmq.connection.Connection;
 import pers.cocoadel.cmq.core.consumer.CmqConsumer;

@@ -1,17 +1,19 @@
 package pers.cocoadel.cmq.core.broker;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import pers.cocoadel.cmq.core.consumer.AbstractCmqConsumer;
 import pers.cocoadel.cmq.core.consumer.CmqConsumer;
+import pers.cocoadel.cmq.core.message.Describe;
 import pers.cocoadel.cmq.core.mq.Cmq;
+import pers.cocoadel.cmq.core.producer.AbstractCmqProducer;
 import pers.cocoadel.cmq.core.producer.CmqProducer;
 import pers.cocoadel.cmq.core.spi.ObjectFactory;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class LocalMapAndConsumerKeyCmqBroker extends CmqBrokerSupport {
+import static com.google.common.base.Preconditions.checkNotNull;
+
+public class LocalMapAndConsumerKeyCmqBroker implements CmqBroker {
 
     private final static int MAX_MQ_COUNT = 64;
 
@@ -19,11 +21,11 @@ public class LocalMapAndConsumerKeyCmqBroker extends CmqBrokerSupport {
 
     private final Map<String, Cmq> map = new ConcurrentHashMap<>(MAX_MQ_COUNT);
 
-    private final Map<ConsumerKey, CmqConsumer<?>> consumerMap = new ConcurrentHashMap<>();
+    private final Map<Describe, CmqConsumer<?>> consumerMap = new ConcurrentHashMap<>();
 
     @Override
     public void createTopic(String topic) {
-        map.computeIfAbsent(topic,k ->{
+        map.computeIfAbsent(topic, k -> {
             Cmq cmq = ObjectFactory.createObject(Cmq.class);
             if (cmq != null) {
                 cmq.init(topic, MAX_MQ_CAPACITY);
@@ -37,42 +39,36 @@ public class LocalMapAndConsumerKeyCmqBroker extends CmqBrokerSupport {
         return map.get(topic);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public <T> CmqConsumer<T> createConsumer(String topic, String name) {
+    public <T> CmqConsumer<T> createConsumer(Describe describe) {
+        checkNotNull(describe);
+        String topic = describe.getTopic();
         if (!map.containsKey(topic)) {
             throw new IllegalArgumentException(String.format("the topic{%s} is not exist!", topic));
         }
         //如果相同名称的consumer已经存在则抛出异常
-        ConsumerKey key = new ConsumerKey(name);
-        synchronized (consumerMap){
-            if (consumerMap.containsKey(key)) {
-                throw new IllegalArgumentException(String.format("the consumer{%s} is exist!",key));
+        synchronized (consumerMap) {
+            if (consumerMap.containsKey(describe)) {
+                throw new IllegalArgumentException(String.format("the consumer{%s} is exist!", describe.toString()));
             }
             CmqConsumer<?> consumer = ObjectFactory.createObject(CmqConsumer.class);
-            if (consumer != null) {
-                consumer.setCmqBroker(this);
-                consumer.setName(name);
+            if (consumer instanceof AbstractCmqConsumer) {
+                ((AbstractCmqConsumer<?>) consumer).setCmqBroker(this);
             }
-            consumerMap.put(key, consumer);
+            consumerMap.put(describe, consumer);
         }
-        return (CmqConsumer<T>) consumerMap.get(key);
+        return (CmqConsumer<T>) consumerMap.get(describe);
     }
 
     @Override
     public CmqProducer createProducer() {
-        CmqProducer cmqProducer = ObjectFactory.createObject(CmqProducer.class);
+        AbstractCmqProducer cmqProducer = ObjectFactory.createObject(AbstractCmqProducer.class);
         if (cmqProducer != null) {
             cmqProducer.setCmqBroker(this);
         }
         return cmqProducer;
     }
 
-    @Data
-    @ToString
-    @EqualsAndHashCode
-    @AllArgsConstructor
-    private static class ConsumerKey {
-        private String name;
-    }
 
 }

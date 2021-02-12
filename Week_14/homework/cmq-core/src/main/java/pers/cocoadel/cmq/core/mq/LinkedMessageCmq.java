@@ -1,17 +1,19 @@
 package pers.cocoadel.cmq.core.mq;
 
+import com.google.common.collect.ImmutableList;
 import pers.cocoadel.cmq.core.message.CmqMessage;
-
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 /**
  * 基于链表实现的队列，通过记录节点来记录消费的 offset
  */
-public class LinkedMessageCmq extends CmqSupport {
+public class LinkedMessageCmq implements Cmq {
     private MessageNode head;
 
     private MessageNode tail;
@@ -51,7 +53,15 @@ public class LinkedMessageCmq extends CmqSupport {
     }
 
     @Override
-    public CmqMessage<?> poll(String consumer) {
+    public CmqMessage<?> pollNow() {
+        if (tail.getPrev() == head) {
+            return null;
+        }
+        return tail.getPrev().getMessage();
+    }
+
+    @Override
+    public CmqMessage<?> pollNow(String consumer) {
         MessageNode offset = consumerOffsetMap.computeIfAbsent(consumer,key -> head.getNext());
         if (offset == tail) {
             return null;
@@ -61,11 +71,8 @@ public class LinkedMessageCmq extends CmqSupport {
     }
 
     @Override
-    public List<CmqMessage<?>> poll(String consumer, int count,long timeOutMills) {
+    public List<CmqMessage<?>> pollNow(String consumer, int count) {
         MessageNode prev = consumerOffsetMap.computeIfAbsent(consumer,key -> head.getNext());
-        while (prev == null) {
-
-        }
         if (prev == tail) {
             return Collections.emptyList();
         }
@@ -77,7 +84,7 @@ public class LinkedMessageCmq extends CmqSupport {
             curr = curr.getNext();
         }
         readOffsetMap.put(consumer, curr.getPrev());
-        return result;
+        return ImmutableList.copyOf(result);
     }
 
     @Override
@@ -86,6 +93,17 @@ public class LinkedMessageCmq extends CmqSupport {
         if (consumerOffsetMap.containsKey(consumer)) {
             consumerOffsetMap.put(consumer, readOffset);
         }
+        readOffsetMap.remove(consumer);
+    }
+
+    @Override
+    public void setOffset(String consumer, long offset) {
+        checkArgument(offset < offsetWrite);
+        MessageNode curr = head;
+        while (offset-- >= 0 && curr.getNext() != tail) {
+            curr = curr.getNext();
+        }
+        consumerOffsetMap.put(consumer, curr);
         readOffsetMap.remove(consumer);
     }
 }

@@ -2,9 +2,9 @@ package pers.cocoadel.cmq.core.test;
 
 import lombok.SneakyThrows;
 import pers.cocoadel.cmq.core.broker.CmqBroker;
-import pers.cocoadel.cmq.core.broker.LocalMapCmqBroker;
 import pers.cocoadel.cmq.core.consumer.CmqConsumer;
 import pers.cocoadel.cmq.core.message.CmqMessage;
+import pers.cocoadel.cmq.core.message.Describe;
 import pers.cocoadel.cmq.core.message.GenericCmqMessage;
 import pers.cocoadel.cmq.core.producer.CmqProducer;
 import pers.cocoadel.cmq.core.spi.ObjectFactory;
@@ -15,15 +15,18 @@ public class OrderTestDemo {
     public static void main(String[] args) {
         String topic = "kk.test";
         CmqBroker broker = ObjectFactory.createObject(CmqBroker.class);
+        if (broker == null) {
+            throw new IllegalStateException("create broker fail");
+        }
         broker.createTopic(topic);
-
-        CmqConsumer<Order> consumer = broker.createConsumer();
+        Describe describe = new Describe(topic, null, "consumer1");
+        CmqConsumer<Order> consumer = broker.createConsumer(describe);
         consumer.subscribe(topic);
         final boolean[] flag = new boolean[1];
         flag[0] = true;
         new Thread(() -> {
             while (flag[0]) {
-                CmqMessage<Order> message = consumer.poll(100);
+                CmqMessage<Order> message = consumer.pollNow();
                 if(null != message) {
                     System.out.println(message.getBody());
                 }

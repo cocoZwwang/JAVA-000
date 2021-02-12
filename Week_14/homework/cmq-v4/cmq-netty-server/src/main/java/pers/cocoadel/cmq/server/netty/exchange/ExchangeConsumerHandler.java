@@ -4,7 +4,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
 import pers.cocoadel.cmq.comm.enums.ResponseStatus;
-import pers.cocoadel.cmq.comm.request.CommRequestBody;
+import pers.cocoadel.cmq.comm.request.ConsumerRequestBody;
 import pers.cocoadel.cmq.comm.request.PollRequestBody;
 import pers.cocoadel.cmq.comm.response.PollResponseBody;
 import pers.cocoadel.cmq.exchange.ServerExchangeCmqConsumer;
@@ -17,7 +17,7 @@ import pers.cocoadel.cmq.netty.comm.StreamResponse;
  * 远程消费者 和 本地消费者 交易
  */
 @Slf4j
-public class ExchangeConsumerHandler extends SimpleChannelInboundHandler<StreamRequest<? extends CommRequestBody>> {
+public class ExchangeConsumerHandler extends SimpleChannelInboundHandler<StreamRequest<? extends ConsumerRequestBody>> {
 
     private final ServerExchangeCmqConsumer exchangeCmqConsumer;
 
@@ -26,11 +26,11 @@ public class ExchangeConsumerHandler extends SimpleChannelInboundHandler<StreamR
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, StreamRequest<? extends CommRequestBody> msg) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, StreamRequest<? extends ConsumerRequestBody> msg) throws Exception {
         StreamResponse streamResponse = StreamResponse.createStreamResponse(msg);
         try {
             OperationType operationType = streamResponse.getOperationType();
-            CommRequestBody requestBody = msg.getBody();
+            ConsumerRequestBody requestBody = msg.getBody();
             //拉取消息
             if (operationType == OperationType.POLL_MESSAGE) {
                 doPoll((PollRequestBody) requestBody, streamResponse);
@@ -54,11 +54,11 @@ public class ExchangeConsumerHandler extends SimpleChannelInboundHandler<StreamR
         streamResponse.setBody(pollResponseBody);
     }
 
-    private void doSubscribe(CommRequestBody request, StreamResponse streamResponse) {
+    private void doSubscribe(ConsumerRequestBody request, StreamResponse streamResponse) {
         exchangeCmqConsumer.subscribe(request);
     }
 
-    private void doCommit(CommRequestBody request, StreamResponse streamResponse) {
+    private void doCommit(ConsumerRequestBody request, StreamResponse streamResponse) {
         exchangeCmqConsumer.commit(request);
     }
 

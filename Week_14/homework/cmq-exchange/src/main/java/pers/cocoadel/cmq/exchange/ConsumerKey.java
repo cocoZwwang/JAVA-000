@@ -3,6 +3,7 @@ package pers.cocoadel.cmq.exchange;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import pers.cocoadel.cmq.core.message.Describe;
 
 @Data
 @EqualsAndHashCode
@@ -10,11 +11,9 @@ import lombok.EqualsAndHashCode;
 public class ConsumerKey {
     private final String token;
 
-    private final String topic;
-
-    private final String groupId;
+    private final Describe describe;
 
     public String toString() {
-        return token + ":" + topic + ":" + groupId;
+        return describe.toString() + "@" + token;
     }
 }

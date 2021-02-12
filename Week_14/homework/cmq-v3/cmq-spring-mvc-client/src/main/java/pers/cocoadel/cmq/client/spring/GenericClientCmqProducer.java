@@ -5,11 +5,9 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Response;
 import pers.cocoadel.cmq.comm.request.SendTextRequestBody;
-import pers.cocoadel.cmq.core.broker.CmqBroker;
 import pers.cocoadel.cmq.core.message.CmqMessage;
 import pers.cocoadel.cmq.core.message.GenericCmqMessage;
 import pers.cocoadel.cmq.core.producer.CmqProducer;
-
 import java.io.IOException;
 import java.util.Objects;
 
@@ -18,9 +16,9 @@ import java.util.Objects;
 public class GenericClientCmqProducer implements CmqProducer {
     private String url;
 
-    private final String path = "/send";
+    private String path = "/send";
 
-    private String token;
+    private HttpDescribe httpDescribe;
 
     private String getAddress() {
         return url + path;
@@ -28,7 +26,7 @@ public class GenericClientCmqProducer implements CmqProducer {
 
     @Override
     public boolean send(String topic, CmqMessage<?> message) {
-        SendTextRequestBody requestBody = new SendTextRequestBody(token, topic, null);
+        SendTextRequestBody requestBody = new SendTextRequestBody(httpDescribe);
         String json = JSON.toJSONString(message.getBody());
         GenericCmqMessage<String> jsonMsg = new GenericCmqMessage<>(message.getHeaders(), json);
         requestBody.setBody(jsonMsg);
@@ -42,11 +40,6 @@ public class GenericClientCmqProducer implements CmqProducer {
             log.error(e.getMessage());
         }
         return false;
-    }
-
-    @Override
-    public void setCmqBroker(CmqBroker broker) {
-        throw new IllegalStateException("client no need set CmqBroker!");
     }
 
     public void close() {

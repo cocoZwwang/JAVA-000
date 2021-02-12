@@ -1,41 +1,54 @@
 package pers.cocoadel.cmq.core.consumer;
 
-import pers.cocoadel.cmq.core.broker.CmqBroker;
+import com.google.common.collect.ImmutableList;
 import pers.cocoadel.cmq.core.message.CmqMessage;
 import pers.cocoadel.cmq.core.mq.Cmq;
 
-public class GenericLocalCmqConsumer<T> extends CmqConsumerSupport<T> {
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+
+public class GenericLocalCmqConsumer<T> extends AbstractCmqConsumer<T> {
 
     private Cmq cmq;
 
-    private CmqBroker broker;
-
-    public GenericLocalCmqConsumer() {
-
-    }
-
-    public GenericLocalCmqConsumer(CmqBroker broker) {
-        this.broker = broker;
-    }
-
-    @Override
-    public void setCmqBroker(CmqBroker cmqBroker) {
-        this.broker = cmqBroker;
-    }
-
     @Override
     public boolean subscribe(String topic) {
-        cmq = broker.findMq(topic);
+        cmq = getCmqBroker().findMq(topic);
         return true;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public CmqMessage<T> poll() {
-        return (CmqMessage<T>) cmq.poll();
+    public CmqMessage<T> pollNow() {
+        checkNotNull(cmq);
+        checkNotNull(getDescribe());
+        return (CmqMessage<T>) cmq.pollNow(getDescribe().toString());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CmqMessage<T>> pollNow(int count) {
+        checkNotNull(cmq);
+        checkNotNull(getDescribe());
+        List<CmqMessage<?>> list = cmq.pollNow(getDescribe().toString(), count);
+        if (list == null || list.size() == 0) {
+            return Collections.emptyList();
+        }
+        List<CmqMessage<T>> result = list
+                .stream()
+                .map(cmqMessage -> (CmqMessage<T>) cmqMessage)
+                .collect(Collectors.toList());
+        return ImmutableList.copyOf(result);
     }
 
     @Override
-    public CmqMessage<T> poll(long timeOutMills) {
-        return (CmqMessage<T>) cmq.poll(timeOutMills);
+    public boolean commit() {
+        checkNotNull(cmq);
+        checkNotNull(getDescribe());
+        cmq.commit(getDescribe().toString());
+        return true;
     }
 }

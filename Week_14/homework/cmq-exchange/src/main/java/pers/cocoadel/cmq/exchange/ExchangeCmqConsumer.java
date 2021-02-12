@@ -1,51 +1,40 @@
 package pers.cocoadel.cmq.exchange;
 
-import pers.cocoadel.cmq.comm.request.CommRequestBody;
+import pers.cocoadel.cmq.comm.request.ConsumerRequestBody;
 import pers.cocoadel.cmq.comm.request.PollRequestBody;
 import pers.cocoadel.cmq.comm.response.PollResponseBody;
 import pers.cocoadel.cmq.core.broker.CmqBroker;
 import pers.cocoadel.cmq.core.consumer.CmqConsumer;
-
+import pers.cocoadel.cmq.core.message.Describe;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class ExchangeCmqConsumer<T> {
     protected CmqBroker cmqBroker;
 
     protected boolean autoCreateTopic = true;
 
-    private final Map<ConsumerKey, CmqConsumer<T>> localConsumerMap = new ConcurrentHashMap<>();
+    private final Map<Describe, CmqConsumer<T>> localConsumerMap = new ConcurrentHashMap<>();
 
-    protected CmqConsumer<T> createConsumer(String topic,String token) {
-        ConsumerKey key = new ConsumerKey(token,topic,null);
-        if (cmqBroker.findMq(topic) == null && autoCreateTopic) {
-            cmqBroker.createTopic(topic);
+    protected CmqConsumer<T> createConsumer(Describe describe) {
+        checkNotNull(describe);
+        if (cmqBroker.findMq(describe.getTopic()) == null && autoCreateTopic) {
+            cmqBroker.createTopic(describe.getTopic());
         }
-        return localConsumerMap.computeIfAbsent(key,k-> cmqBroker.createConsumer(topic, key.toString()));
+        return localConsumerMap.computeIfAbsent(describe,k-> cmqBroker.createConsumer(describe));
     }
 
-    public void removeConsumer(ConsumerKey key) {
-        localConsumerMap.remove(key);
+    public void removeConsumer(Describe describe) {
+        localConsumerMap.remove(describe);
     }
 
-    public void removeConsumer(String token) {
-        Set<ConsumerKey> consumerKeys = localConsumerMap
-                .keySet()
-                .stream()
-                .filter(key -> key.getToken().equals(token))
-                .collect(Collectors.toSet());
-        for (ConsumerKey key : consumerKeys) {
-            removeConsumer(key);
-        }
-    }
-
-    public abstract void subscribe(CommRequestBody requestBody);
+    public abstract void subscribe(ConsumerRequestBody requestBody);
 
     public abstract PollResponseBody poll(PollRequestBody requestBody);
 
-    public abstract void commit(CommRequestBody cmqRequest);
+    public abstract void commit(ConsumerRequestBody cmqRequest);
 
     public void setCmqBroker(CmqBroker cmqBroker) {
         this.cmqBroker = cmqBroker;

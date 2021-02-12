@@ -12,9 +12,9 @@ public enum OperationType {
     AUTH(0, AuthRequestBody.class, AuthResponseBody.class),
     POLL_MESSAGE(1, PollRequestBody.class, PollResponseBody.class),
     SEND_MESSAGE(2, SendTextRequestBody.class, null),
-    SUBSCRIBE(3, CommRequestBody.class,null),
-    COMMIT(4, CommRequestBody.class,null),
-    DIS_CONNECT(5, CommRequestBody.class, null);
+    SUBSCRIBE(3, ConsumerRequestBody.class,null),
+    COMMIT(4, ConsumerRequestBody.class,null),
+    DIS_CONNECT(5, AuthRequestBody.class, null);
 
     private final int code;
 

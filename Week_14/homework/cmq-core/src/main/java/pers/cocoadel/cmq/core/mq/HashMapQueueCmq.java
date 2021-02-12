@@ -1,5 +1,6 @@
 package pers.cocoadel.cmq.core.mq;
 
+import com.google.common.collect.ImmutableList;
 import pers.cocoadel.cmq.core.message.CmqMessage;
 
 import java.util.Collections;
@@ -13,14 +14,14 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * 这里使用序列号记录节点的位置，主要是为了客户端能持久化当前读取的偏移量
  */
-public class HashMapQueueCmq extends CmqSupport {
+public class HashMapQueueCmq implements Cmq {
 
     private long capacity = Long.MAX_VALUE - 1;
 
     private final Map<Long, MessageNode> queue = new ConcurrentSkipListMap<>();
 
     //队列写入数据的偏移量
-    private final AtomicLong writeOffset = new AtomicLong();
+    private final AtomicLong offsetWriteable = new AtomicLong(0);
 
     //当前读取数据的偏移量
     private final Map<String, Long> readOffsetMap = new ConcurrentHashMap<>();
@@ -36,98 +37,55 @@ public class HashMapQueueCmq extends CmqSupport {
     // todo 测试 synchronized 和 cas 哪个性能更加好
     @Override
     public boolean send(CmqMessage<?> message) {
-        if (writeOffset.get() == capacity || message == null) {
+        if (offsetWriteable.get() > capacity || message == null) {
             return false;
         }
         MessageNode node = new MessageNode();
         node.setMessage(message);
         synchronized (lock) {
-            long key = writeOffset.get();
-            MessageNode prev = queue.get(key);
+            long key = offsetWriteable.get();
+            MessageNode prev = queue.get(key - 1);
             if (prev != null) {
                 node.setPrev(prev);
                 prev.setNext(node);
             }
-            queue.put(writeOffset.incrementAndGet(), node);
+            queue.put(offsetWriteable.getAndIncrement(), node);
             lock.notifyAll();
         }
         return true;
     }
 
     @Override
-    public CmqMessage<?> poll() {
-        return super.poll();
-    }
-
-    @Override
-    public CmqMessage<?> poll(long timeOutMills) {
-        return super.poll(timeOutMills);
-    }
-
-    @Override
-    public CmqMessage<?> poll(String consumer) {
-        long readOffset = readOffsetMap.computeIfAbsent(consumer, k -> writeOffset.get());
-        MessageNode prev = queue.get(readOffset);
-        if (prev == null) {
+    public CmqMessage<?> pollNow() {
+        if (offsetWriteable.get() == 0) {
             return null;
         }
-        pollCountMap.put(consumer, 1);
-        return prev.getMessage();
+        return queue.get(offsetWriteable.get() - 1).getMessage();
     }
 
     @Override
-    public CmqMessage<?> poll(String consumer, long timeOutMills) {
-        CmqMessage<?> message = poll(consumer);
-        if (message == null) {
-            synchronized (lock) {
-                try {
-                    lock.wait(timeOutMills);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            message = poll(consumer);
+    public CmqMessage<?> pollNow(String consumer) {
+        long readOffset = readOffsetMap.computeIfAbsent(consumer, k -> offsetWriteable.get() - 1);
+        if (readOffset < 0) {
+            return null;
         }
-        return message;
+        MessageNode node = queue.get(readOffset);
+        return node == null ? null : node.getMessage();
     }
 
     @Override
-    public List<CmqMessage<?>> poll(String consumer, int count) {
-        long readOffset = readOffsetMap.computeIfAbsent(consumer, k -> writeOffset.get());
-        MessageNode prev = queue.get(readOffset);
-        if (prev == null) {
+    public List<CmqMessage<?>> pollNow(String consumer, int count) {
+        long readOffset = readOffsetMap.computeIfAbsent(consumer, k -> offsetWriteable.get() - 1);
+        if (readOffset < 0) {
             return Collections.emptyList();
         }
-        List<CmqMessage<?>> result = new LinkedList<>();
-        int c = 0;
-        MessageNode curr = prev;
-        while (c++ < count && curr != null) {
-            result.add(curr.getMessage());
+        MessageNode curr = queue.get(readOffset);
+        List<CmqMessage<?>> list = new LinkedList<>();
+        while (curr != null && count-- > 0) {
+            list.add(curr.getMessage());
             curr = curr.getNext();
         }
-        pollCountMap.put(consumer, c);
-        return result;
-    }
-
-    @Override
-    public List<CmqMessage<?>> poll(String consumer, int count, long timeOutMills) {
-        List<CmqMessage<?>> result = poll(consumer, count);
-        long time = timeOutMills;
-        while (result.size() < count && time > 0) {
-            long startTime = System.currentTimeMillis();
-            synchronized (lock) {
-                try {
-                    lock.wait(time);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                count = count - result.size();
-                List<CmqMessage<?>> list = poll(consumer,count);
-                result.addAll(list);
-                time = time - (System.currentTimeMillis() - startTime);
-            }
-        }
-        return result;
+        return ImmutableList.copyOf(list);
     }
 
     @Override
@@ -140,8 +98,8 @@ public class HashMapQueueCmq extends CmqSupport {
     }
 
     @Override
-    public void setOffset(String consumer,  long offset) {
-        long writeIndex = writeOffset.get();
+    public void setOffset(String consumer, long offset) {
+        long writeIndex = offsetWriteable.get();
         if (offset > writeIndex) {
             String message = String.format("offset(%s) is bigger than queue size(%s)", offset, writeIndex);
             throw new IndexOutOfBoundsException(message);
