@@ -9,7 +9,6 @@ import pers.cocoadel.cmq.comm.response.AuthResponseBody;
 import pers.cocoadel.cmq.comm.response.PollResponseBody;
 import pers.cocoadel.cmq.exchange.ExchangeCmqConsumer;
 import pers.cocoadel.cmq.exchange.ExchangeCmqProducer;
-import pers.cocoadel.cmq.exchange.ProducerKey;
 
 import java.util.UUID;
 
@@ -31,8 +30,7 @@ public class CmqController {
 
     @PostMapping("/disconnect")
     public void unConnect(@RequestBody AuthRequestBody requestBody) {
-//        producer.removeProducer(new ProducerKey(requestBody.getToken()));
-//        consumer.removeConsumer(requestBody.getToken());
+
     }
 
     @PostMapping("/subscribe")
