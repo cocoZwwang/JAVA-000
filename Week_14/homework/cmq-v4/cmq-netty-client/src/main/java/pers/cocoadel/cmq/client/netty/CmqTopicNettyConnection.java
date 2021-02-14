@@ -1,59 +1,28 @@
 package pers.cocoadel.cmq.client.netty;
 
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import pers.cocoadel.cmq.comm.request.AuthRequestBody;
-import pers.cocoadel.cmq.comm.response.AuthResponseBody;
+import com.google.common.base.Strings;
+import io.netty.channel.ChannelId;
+import lombok.extern.slf4j.Slf4j;
 import pers.cocoadel.cmq.connection.Connection;
 import pers.cocoadel.cmq.core.consumer.CmqConsumer;
+import pers.cocoadel.cmq.core.message.Describe;
 import pers.cocoadel.cmq.core.producer.CmqProducer;
-import pers.cocoadel.cmq.netty.comm.OperationType;
-import pers.cocoadel.cmq.netty.comm.StreamRequest;
-import pers.cocoadel.cmq.netty.comm.StreamResponse;
-
 import java.io.IOException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicLong;
 
+@Slf4j
 public class CmqTopicNettyConnection implements Connection  {
 
-    private AtomicLong streamCreator = new AtomicLong();
-
-    private ChannelFuture channelFuture;
-
-    private RequestPendingCenter requestPendingCenter;
-
-    private static final Long TIME_OUT = 1000L * 5;
-
-    private String token;
+    private  NettyCmqClient nettyCmqClient;
 
     @Override
     public void connect(String ip, int port) throws IOException {
-        Channel channel = channelFuture.channel();
-        if (channel.isActive() && channel.isWritable()) {
-            StreamRequest<AuthRequestBody> streamRequest = new StreamRequest<>();
-            streamRequest.setStreamId(streamCreator.incrementAndGet());
-            streamRequest.setOperationType(OperationType.AUTH);
-            AuthRequestBody authRequestBody = new AuthRequestBody();
-            authRequestBody.setName("admin");
-            authRequestBody.setPassword("123456");
-            streamRequest.setBody(authRequestBody);
-            RequestFuture requestFuture = new RequestFuture();
-            requestPendingCenter.addFuture(streamRequest.getStreamId(), requestFuture);
-            channel.writeAndFlush(streamRequest);
-            try {
-                StreamResponse response = requestFuture.get(TIME_OUT, TimeUnit.MILLISECONDS);
-                if (response.isSuccessful()) {
-                    AuthResponseBody authResponseBody = (AuthResponseBody) response.getBody();
-                    token = authResponseBody.getToken();
-                    return;
-                }
-                throw new IOException(response.getResultMessage());
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                throw new IOException(e.getMessage());
-            }
+        try {
+            doClose();
+            nettyCmqClient = new NettyCmqClient(ip, port);
+            nettyCmqClient.start();
+            log.info("connection success!");
+        } catch (Exception e) {
+            log.error("connection fail: " + e.getMessage());
         }
     }
 
@@ -63,16 +32,35 @@ public class CmqTopicNettyConnection implements Connection  {
     }
 
     private void doClose() {
-
+        if (nettyCmqClient != null) {
+            nettyCmqClient.close();
+        }
     }
 
     @Override
     public <T> CmqConsumer<T> createConsumer(String topic, String groupId, Class<T> tClass) {
-        return null;
+        if (Strings.isNullOrEmpty(topic)) {
+            throw new NullPointerException("the topic is null");
+        }
+        if (nettyCmqClient.isActive()) {
+            Describe describe = new Describe();
+            describe.setTopic(topic);
+            describe.setGroupId(groupId);
+            ChannelId id = nettyCmqClient.getChannelId();
+            describe.setName(id.asLongText());
+            NettyClientConsumer<T> consumer = new NettyClientConsumer<>();
+            consumer.setDescribe(describe);
+            consumer.setNettyCmqClient(nettyCmqClient);
+            consumer.setTClass(tClass);
+            return consumer;
+        }
+        throw new IllegalStateException("create consumer error: channel is un active");
     }
 
     @Override
     public CmqProducer createProducer() {
-        return null;
+        NettyClientProducer producer = new NettyClientProducer();
+        producer.setNettyCmqClient(nettyCmqClient);
+        return producer;
     }
 }

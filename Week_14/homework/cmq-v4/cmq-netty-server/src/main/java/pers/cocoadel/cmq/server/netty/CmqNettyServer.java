@@ -1,5 +1,6 @@
 package pers.cocoadel.cmq.server.netty;
 
+import com.google.common.collect.ImmutableList;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -8,15 +9,25 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.util.concurrent.DefaultThreadFactory;
+import pers.cocoadel.cmq.core.broker.AbstractCmqBroker;
 import pers.cocoadel.cmq.core.broker.CmqBroker;
+import pers.cocoadel.cmq.core.mq.AbstractTopicCmq;
+import pers.cocoadel.cmq.core.spi.CmqConsumerFactory;
+import pers.cocoadel.cmq.core.spi.CmqFactory;
+import pers.cocoadel.cmq.core.spi.CmqProducerFactory;
 import pers.cocoadel.cmq.core.spi.ObjectFactory;
 import pers.cocoadel.cmq.exchange.ServerExchangeCmqConsumer;
 import pers.cocoadel.cmq.exchange.ServerExchangeCmqProducer;
+import pers.cocoadel.cmq.netty.comm.StreamRequest;
 import pers.cocoadel.cmq.netty.comm.codec.CmqFrameDecoder;
 import pers.cocoadel.cmq.netty.comm.codec.CmqFrameEncoder;
 import pers.cocoadel.cmq.server.netty.codec.*;
+import pers.cocoadel.cmq.server.netty.exchange.DispatcherHandler;
 import pers.cocoadel.cmq.server.netty.exchange.ExchangeConsumerHandler;
+import pers.cocoadel.cmq.server.netty.exchange.ExchangeHandler;
 import pers.cocoadel.cmq.server.netty.exchange.ExchangeProducerHandler;
+
+import java.util.List;
 
 public class CmqNettyServer {
     private final CmqBroker cmqBroker;
@@ -27,6 +38,12 @@ public class CmqNettyServer {
 
     CmqNettyServer() {
         cmqBroker = ObjectFactory.createObject(CmqBroker.class);
+        if (cmqBroker instanceof AbstractCmqBroker) {
+            AbstractCmqBroker abstractCmqBroker = (AbstractCmqBroker) cmqBroker;
+            abstractCmqBroker.setCmqFactory(CmqFactory.getInstance());
+            abstractCmqBroker.setCmqConsumerFactory(CmqConsumerFactory.getInstance());
+            abstractCmqBroker.setCmqProducerFactory(CmqProducerFactory.getInstance());
+        }
         exchangeCmqConsumer = new ServerExchangeCmqConsumer();
         exchangeCmqConsumer.setCmqBroker(cmqBroker);
         exchangeCmqProducer = new ServerExchangeCmqProducer();
@@ -39,7 +56,7 @@ public class CmqNettyServer {
         cmqNettyServer.start();
     }
 
-    private void start(){
+    private void start() {
         ServerBootstrap serverBootstrap = new ServerBootstrap();
         //0 ： Netty 默认配置的线程数 = NettyRuntime.availableProcessors() * 2
         final EventLoopGroup bossGroup = new NioEventLoopGroup(0, new DefaultThreadFactory("boss"));
@@ -53,26 +70,35 @@ public class CmqNettyServer {
                         protected void initChannel(NioSocketChannel ch) {
                             ChannelPipeline pipeline = ch.pipeline();
                             //编解码
+                            pipeline.addLast("loggingHandler before Frame codec", new LoggingHandler(LogLevel.INFO));
                             pipeline.addLast("CmqFrameDecoder", new CmqFrameDecoder());
                             pipeline.addLast("CmqFrameEncoder", new CmqFrameEncoder());
+                            pipeline.addLast("loggingHandler before Protocol codec", new LoggingHandler(LogLevel.INFO));
                             pipeline.addLast("CmqProtocolDecoder", new CmqProtocolDecoder());
                             pipeline.addLast("CmqProtocolEncoder", new CmqProtocolEncoder());
+                            pipeline.addLast("loggingHandler before Json coder", new LoggingHandler(LogLevel.INFO));
                             pipeline.addLast("CmqRequestBodyJsonDecoder", new CmqRequestBodyJsonDecoder());
-                            pipeline.addLast("CmqRequestBodyJsonDecoder", new CmqRequestBodyJsonDecoder());
+                            pipeline.addLast("CmqResponseBodyJsonEncoder", new CmqResponseBodyJsonEncoder());
                             //日志
                             pipeline.addLast("LoggingHandler", new LoggingHandler());
                             //消息服务处理
-                            pipeline.addLast("ExchangeConsumerHandler", new ExchangeConsumerHandler(exchangeCmqConsumer));
-                            pipeline.addLast("ExchangeProducerHandler", new ExchangeProducerHandler(exchangeCmqProducer));
+                            DispatcherHandler dispatcherHandler = new DispatcherHandler();
+                            List<ExchangeHandler<StreamRequest<?>>> exchangeHandlers = ImmutableList.of(
+                                    new ExchangeConsumerHandler(exchangeCmqConsumer),
+                                    new ExchangeProducerHandler(exchangeCmqProducer));
+                            dispatcherHandler.setExchangeHandlers(exchangeHandlers);
+                            pipeline.addLast("DispatcherHandler", dispatcherHandler);
+//                            pipeline.addLast("ExchangeConsumerHandler", new ExchangeConsumerHandler(exchangeCmqConsumer));
+//                            pipeline.addLast("ExchangeProducerHandler", new ExchangeProducerHandler(exchangeCmqProducer));
                         }
                     });
-            ChannelFuture channelFuture = serverBootstrap.bind(8080).sync();
+            ChannelFuture channelFuture = serverBootstrap.bind(8088).sync();
             channelFuture.channel().closeFuture().addListener((ChannelFutureListener) channelFuture1 -> {
                 bossGroup.shutdownGracefully();
                 workGroup.shutdownGracefully();
                 System.out.println("server shutdown !");
             });
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

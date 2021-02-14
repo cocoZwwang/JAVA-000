@@ -6,8 +6,10 @@ import lombok.extern.slf4j.Slf4j;
 import okhttp3.Response;
 import pers.cocoadel.cmq.comm.request.SendTextRequestBody;
 import pers.cocoadel.cmq.core.message.CmqMessage;
+import pers.cocoadel.cmq.core.message.Describe;
 import pers.cocoadel.cmq.core.message.GenericCmqMessage;
 import pers.cocoadel.cmq.core.producer.CmqProducer;
+
 import java.io.IOException;
 import java.util.Objects;
 
@@ -26,16 +28,18 @@ public class GenericClientCmqProducer implements CmqProducer {
 
     @Override
     public boolean send(String topic, CmqMessage<?> message) {
-        SendTextRequestBody requestBody = new SendTextRequestBody(httpDescribe);
+        Describe describe = httpDescribe.getDescribe();
+        describe.setTopic(topic);
+        SendTextRequestBody requestBody = new SendTextRequestBody(describe);
         String json = JSON.toJSONString(message.getBody());
         GenericCmqMessage<String> jsonMsg = new GenericCmqMessage<>(message.getHeaders(), json);
         requestBody.setBody(jsonMsg);
         try {
             Response response = HttpClientUtil.post(requestBody, getAddress());
-            if(response.isSuccessful()){
+            if (response.isSuccessful()) {
                 return true;
             }
-            log.error(response.message()+ ":" + Objects.requireNonNull(response.body()).string());
+            log.error(response.message() + ":" + Objects.requireNonNull(response.body()).string());
         } catch (IOException e) {
             log.error(e.getMessage());
         }

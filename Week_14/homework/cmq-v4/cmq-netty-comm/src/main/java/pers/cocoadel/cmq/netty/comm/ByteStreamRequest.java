@@ -4,6 +4,14 @@ import io.netty.buffer.ByteBuf;
 
 public class ByteStreamRequest extends StreamRequest<byte[]> {
 
+    public void encode(ByteBuf buf) {
+        buf.writeLong(getStreamId());
+        buf.writeInt(getOperationType().getCode());
+        if (getBody() != null && getBody().length > 0) {
+            buf.writeBytes(getBody());
+        }
+    }
+
     public void decode(ByteBuf buf) {
         setStreamId(buf.readLong());
         int type = buf.readInt();

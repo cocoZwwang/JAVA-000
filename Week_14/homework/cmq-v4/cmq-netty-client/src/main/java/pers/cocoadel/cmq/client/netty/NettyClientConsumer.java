@@ -10,6 +10,7 @@ import pers.cocoadel.cmq.core.consumer.CmqConsumer;
 import pers.cocoadel.cmq.core.message.CmqMessage;
 import pers.cocoadel.cmq.core.message.Describe;
 import pers.cocoadel.cmq.core.message.GenericCmqMessage;
+import pers.cocoadel.cmq.netty.comm.OperationType;
 import pers.cocoadel.cmq.netty.comm.StreamResponse;
 import java.util.Collections;
 import java.util.List;
@@ -37,9 +38,9 @@ public class NettyClientConsumer<T> implements CmqConsumer<T> {
 
     @Override
     public boolean subscribe(String topic) {
-        ConsumerRequestBody consumerRequestBody = new ConsumerRequestBody(describe);
-        RequestFuture future = nettyCmqClient.sendMessage(consumerRequestBody);
         try {
+            ConsumerRequestBody consumerRequestBody = new ConsumerRequestBody(describe);
+            RequestFuture future = nettyCmqClient.sendMessage(consumerRequestBody, OperationType.SUBSCRIBE);
             StreamResponse response = future.get(TIME_OUT, TimeUnit.MILLISECONDS);
             return response.isSuccessful();
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
@@ -59,14 +60,14 @@ public class NettyClientConsumer<T> implements CmqConsumer<T> {
 
     @Override
     public List<CmqMessage<T>> pollNow(int count) {
-        PollRequestBody requestBody = new PollRequestBody(describe, 1);
-        RequestFuture future = nettyCmqClient.sendMessage(requestBody);
         try {
-            StreamResponse response = future.get();
+            PollRequestBody requestBody = new PollRequestBody(describe, 1);
+            RequestFuture future = nettyCmqClient.sendMessage(requestBody,OperationType.POLL_MESSAGE);
+            StreamResponse response = future.get(TIME_OUT, TimeUnit.MILLISECONDS);
             String content = response.getBody().toString();
             return parseResponse(content);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.info("poll Now error: " + e.getMessage());
         }
         return Collections.emptyList();
     }
@@ -88,10 +89,10 @@ public class NettyClientConsumer<T> implements CmqConsumer<T> {
 
     @Override
     public boolean commit() {
-        ConsumerRequestBody requestBody = new ConsumerRequestBody(describe);
-        RequestFuture future = nettyCmqClient.sendMessage(requestBody);
-        StreamResponse response;
         try {
+            ConsumerRequestBody requestBody = new ConsumerRequestBody(describe);
+            RequestFuture future = nettyCmqClient.sendMessage(requestBody,OperationType.COMMIT);
+            StreamResponse response;
             response = future.get(TIME_OUT, TimeUnit.MILLISECONDS);
             return response.isSuccessful();
         } catch (InterruptedException | ExecutionException | TimeoutException e) {

@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public final class CmqTopicConnection implements Connection {
+public final class SpringCmqTopicConnection implements Connection {
 
     private final Map<HttpDescribe, GenericClientCmqConsumer<?>> consumerMap = new ConcurrentHashMap<>();
 
@@ -22,7 +22,7 @@ public final class CmqTopicConnection implements Connection {
 
     private String token;
 
-    public CmqTopicConnection() {
+    public SpringCmqTopicConnection() {
 
     }
 

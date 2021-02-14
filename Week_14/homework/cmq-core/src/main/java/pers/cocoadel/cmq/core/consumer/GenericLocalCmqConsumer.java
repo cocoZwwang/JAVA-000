@@ -17,6 +17,8 @@ public class GenericLocalCmqConsumer<T> extends AbstractCmqConsumer<T> {
     @Override
     public boolean subscribe(String topic) {
         cmq = getCmqBroker().findMq(topic);
+        long offset = cmq.getMqOffset();
+        cmq.setOffset(getDescribe().toString(),offset);
         return true;
     }
 

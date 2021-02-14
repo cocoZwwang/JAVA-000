@@ -22,11 +22,11 @@ public class ServerExchangeCmqProducer extends ExchangeCmqProducer {
 
     @Override
     public void send(SendTextRequestBody requestBody) {
-        requestBody.check();
         try {
+            requestBody.check();
             CmqProducer producer = createCmqProducer(requestBody);
             Describe describe = requestBody.getDescribe();
-            producer.send(describe.getName(), requestBody.getBody());
+            producer.send(describe.getTopic(), requestBody.getBody());
         } catch (Exception e) {
             throw CmqOperationException.createServerErrorException(e);
         }

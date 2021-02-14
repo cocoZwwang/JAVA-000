@@ -17,4 +17,12 @@ public class HttpDescribe extends Describe {
     public HttpDescribe(String token) {
         super(null, null, token);
     }
+
+    public Describe getDescribe() {
+        Describe describe = new Describe();
+        describe.setName(getName());
+        describe.setTopic(getTopic());
+        describe.setGroupId(getGroupId());
+        return describe;
+    }
 }

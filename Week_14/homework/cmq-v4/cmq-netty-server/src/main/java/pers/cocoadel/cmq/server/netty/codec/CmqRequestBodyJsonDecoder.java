@@ -1,6 +1,7 @@
 package pers.cocoadel.cmq.server.netty.codec;
 
 import com.alibaba.fastjson.JSON;
+import com.google.common.base.Throwables;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +41,7 @@ public class CmqRequestBodyJsonDecoder extends MessageToMessageDecoder<ByteStrea
                 //如果当前通过不可，暂时丢弃然后打印日志
                 log.error("dropped cmqResponse: " + response);
             }
+            log.error("CmqRequestBodyJsonDecoder error: " + Throwables.getStackTraceAsString(e));
         }
     }
 }

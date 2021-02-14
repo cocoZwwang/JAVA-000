@@ -1,5 +1,6 @@
 package pers.cocoadel.cmq.server.netty.codec;
 
+import com.google.common.base.Throwables;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -32,6 +33,7 @@ public class CmqProtocolDecoder extends ByteToMessageDecoder {
                 //如果当前通过不可，暂时丢弃然后打印日志
                 log.error("dropped cmqResponse: " + response);
             }
+            log.error("CmqProtocolDecoder error: " + Throwables.getStackTraceAsString(e));
         }
 
     }

@@ -1,11 +1,9 @@
 package pers.cocoadel.cmq.comm.request;
 
-import com.google.common.base.Strings;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import pers.cocoadel.cmq.core.message.Describe;
-import sun.security.krb5.internal.crypto.Des;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -26,7 +24,7 @@ public class PollRequestBody extends ConsumerRequestBody {
     @Override
     public void check(){
         super.check();
-        checkArgument(messageCount > 0);
+        checkArgument(messageCount > 0,"messageCount must be > 0");
     }
 
 }

@@ -1,6 +1,8 @@
 package pers.cocoade.cmq.demo;
 
-import pers.cocoadel.cmq.client.spring.CmqTopicConnection;
+import pers.cocoadel.cmq.client.netty.CmqTopicNettyConnection;
+import pers.cocoadel.cmq.client.spring.SpringCmqTopicConnection;
+import pers.cocoadel.cmq.connection.Connection;
 import pers.cocoadel.cmq.core.message.GenericCmqMessage;
 import pers.cocoadel.cmq.core.producer.CmqProducer;
 import pers.cocoadel.cmq.core.test.Order;
@@ -10,9 +12,10 @@ public class ProducerDemo {
 
     public static void main(String[] args) {
         try {
-            CmqTopicConnection cmqTopicConnection = new CmqTopicConnection();
-            cmqTopicConnection.connect("localhost",8080);
-            CmqProducer producer = cmqTopicConnection.createProducer();
+//            Connection connection = new SpringCmqTopicConnection();
+            Connection connection = nettyConnection();
+            connection.connect("localhost",8088);
+            CmqProducer producer = connection.createProducer();
             for (int i = 0; i < 10; i++) {
                 Order order = new Order(1000L + i, System.currentTimeMillis(), "USD2CNY", 6.51d);
                 producer.send(topic, new GenericCmqMessage<>(null, order));
@@ -33,5 +36,13 @@ public class ProducerDemo {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static Connection springConnection() {
+        return new SpringCmqTopicConnection();
+    }
+
+    private static Connection nettyConnection() {
+        return new CmqTopicNettyConnection();
     }
 }

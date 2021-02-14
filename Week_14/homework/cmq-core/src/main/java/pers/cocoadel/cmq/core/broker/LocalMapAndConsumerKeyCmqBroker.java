@@ -3,17 +3,17 @@ package pers.cocoadel.cmq.core.broker;
 import pers.cocoadel.cmq.core.consumer.AbstractCmqConsumer;
 import pers.cocoadel.cmq.core.consumer.CmqConsumer;
 import pers.cocoadel.cmq.core.message.Describe;
+import pers.cocoadel.cmq.core.mq.AbstractTopicCmq;
 import pers.cocoadel.cmq.core.mq.Cmq;
 import pers.cocoadel.cmq.core.producer.AbstractCmqProducer;
 import pers.cocoadel.cmq.core.producer.CmqProducer;
-import pers.cocoadel.cmq.core.spi.ObjectFactory;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class LocalMapAndConsumerKeyCmqBroker implements CmqBroker {
+public class LocalMapAndConsumerKeyCmqBroker extends AbstractCmqBroker {
 
     private final static int MAX_MQ_COUNT = 64;
 
@@ -25,10 +25,12 @@ public class LocalMapAndConsumerKeyCmqBroker implements CmqBroker {
 
     @Override
     public void createTopic(String topic) {
+        checkNotNull(cmqFactory);
         map.computeIfAbsent(topic, k -> {
-            Cmq cmq = ObjectFactory.createObject(Cmq.class);
+            Cmq cmq = cmqFactory.createCmq();
             if (cmq != null) {
                 cmq.init(topic, MAX_MQ_CAPACITY);
+                ((AbstractTopicCmq) cmq).setTopic(topic);
             }
             return cmq;
         });
@@ -36,12 +38,16 @@ public class LocalMapAndConsumerKeyCmqBroker implements CmqBroker {
 
     @Override
     public Cmq findMq(String topic) {
+        if (!map.containsKey(topic) && isAutoCreateTopic) {
+            createTopic(topic);
+        }
         return map.get(topic);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public <T> CmqConsumer<T> createConsumer(Describe describe) {
+        checkNotNull(cmqConsumerFactory);
         checkNotNull(describe);
         String topic = describe.getTopic();
         if (!map.containsKey(topic)) {
@@ -52,9 +58,11 @@ public class LocalMapAndConsumerKeyCmqBroker implements CmqBroker {
             if (consumerMap.containsKey(describe)) {
                 throw new IllegalArgumentException(String.format("the consumer{%s} is exist!", describe.toString()));
             }
-            CmqConsumer<?> consumer = ObjectFactory.createObject(CmqConsumer.class);
+            CmqConsumer<?> consumer = cmqConsumerFactory.createConsumer();
             if (consumer instanceof AbstractCmqConsumer) {
-                ((AbstractCmqConsumer<?>) consumer).setCmqBroker(this);
+                AbstractCmqConsumer<?> abstractCmqConsumer = (AbstractCmqConsumer<?>) consumer;
+                abstractCmqConsumer.setDescribe(describe);
+                abstractCmqConsumer.setCmqBroker(this);
             }
             consumerMap.put(describe, consumer);
         }
@@ -63,12 +71,12 @@ public class LocalMapAndConsumerKeyCmqBroker implements CmqBroker {
 
     @Override
     public CmqProducer createProducer() {
-        AbstractCmqProducer cmqProducer = ObjectFactory.createObject(AbstractCmqProducer.class);
-        if (cmqProducer != null) {
-            cmqProducer.setCmqBroker(this);
+        checkNotNull(cmqProducerFactory);
+        CmqProducer cmqProducer = cmqProducerFactory.createProducer();
+        if (cmqProducer instanceof AbstractCmqProducer) {
+            AbstractCmqProducer abstractCmqProducer = (AbstractCmqProducer) cmqProducer;
+            abstractCmqProducer.setCmqBroker(this);
         }
         return cmqProducer;
     }
-
-
 }

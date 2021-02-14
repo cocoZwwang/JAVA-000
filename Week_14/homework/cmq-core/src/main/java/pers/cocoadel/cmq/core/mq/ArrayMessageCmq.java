@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * 2）使用指针记录当前消息写入位置。
  * 3）对于每个命名消费者，用指针记录消费位置。
  */
-public class ArrayMessageCmq implements Cmq {
+public class ArrayMessageCmq extends AbstractTopicCmq {
     private CmqMessage<?>[] array;
 
     private int offsetWriteable = 0;
@@ -75,6 +75,19 @@ public class ArrayMessageCmq implements Cmq {
             throw new NoSuchElementException(String.format("the consumer{%s} is not exist！", consumer));
         }
         consumerOffsetMap.put(consumer, offset);
+    }
+
+    @Override
+    public long getOffset(String consumer) {
+        if (consumerOffsetMap.containsKey(consumer)) {
+            return consumerOffsetMap.get(consumer);
+        }
+        return -1;
+    }
+
+    @Override
+    public long getMqOffset() {
+        return offsetWriteable - 1;
     }
 
     /**

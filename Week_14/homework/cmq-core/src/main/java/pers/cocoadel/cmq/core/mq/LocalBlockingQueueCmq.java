@@ -53,4 +53,14 @@ public class LocalBlockingQueueCmq implements Cmq {
     public void setOffset(String consumer, long offset) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public long getOffset(String consumer) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public long getMqOffset() {
+        return queue.size() - 1;
+    }
 }

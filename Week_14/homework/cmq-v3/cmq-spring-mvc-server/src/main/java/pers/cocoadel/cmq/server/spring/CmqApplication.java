@@ -3,8 +3,9 @@ package pers.cocoadel.cmq.server.spring;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import pers.cocoadel.cmq.core.broker.AbstractCmqBroker;
 import pers.cocoadel.cmq.core.broker.CmqBroker;
-import pers.cocoadel.cmq.core.spi.ObjectFactory;
+import pers.cocoadel.cmq.core.spi.*;
 import pers.cocoadel.cmq.exchange.ExchangeCmqConsumer;
 import pers.cocoadel.cmq.exchange.ExchangeCmqProducer;
 import pers.cocoadel.cmq.exchange.ServerExchangeCmqConsumer;
@@ -33,6 +34,10 @@ public class CmqApplication {
 
     @Bean
     public CmqBroker localCmqBroker(){
-        return ObjectFactory.createObject(CmqBroker.class);
+        AbstractCmqBroker abstractCmqBroker = (AbstractCmqBroker) CmqBrokerFactory.getInstance().createCmqBroker();
+        abstractCmqBroker.setCmqFactory(CmqFactory.getInstance());
+        abstractCmqBroker.setCmqProducerFactory(CmqProducerFactory.getInstance());
+        abstractCmqBroker.setCmqConsumerFactory(CmqConsumerFactory.getInstance());
+        return abstractCmqBroker;
     }
 }

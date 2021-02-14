@@ -19,8 +19,8 @@ public class ConsumerRequestBody extends RequestBody {
     private Describe describe;
 
     public void check() {
-        checkNotNull(describe);
-        checkArgument(Strings.isNullOrEmpty(describe.getTopic()));
-        checkArgument(Strings.isNullOrEmpty(describe.getName()));
+        checkNotNull(describe,"describe is null");
+        checkArgument(!Strings.isNullOrEmpty(describe.getTopic()),"topic is null");
+        checkArgument(!Strings.isNullOrEmpty(describe.getName()),"consumer name is null");
     }
 }

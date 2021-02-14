@@ -100,6 +100,10 @@ public interface Cmq  {
      */
     void setOffset(String consumer, long offset);
 
+    long getOffset(String consumer);
+
+    long getMqOffset();
+
     /**
      * CMQ 初始化
      * @param topic 主题

@@ -1,6 +1,7 @@
 package pers.cocoadel.cmq.core.mq;
 
 import com.google.common.collect.ImmutableList;
+import lombok.extern.slf4j.Slf4j;
 import pers.cocoadel.cmq.core.message.CmqMessage;
 
 import java.util.Collections;
@@ -11,10 +12,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.atomic.AtomicLong;
 
+
 /**
  * 这里使用序列号记录节点的位置，主要是为了客户端能持久化当前读取的偏移量
  */
-public class HashMapQueueCmq implements Cmq {
+@Slf4j
+public class HashMapQueueCmq extends AbstractTopicCmq {
 
     private long capacity = Long.MAX_VALUE - 1;
 
@@ -33,11 +36,13 @@ public class HashMapQueueCmq implements Cmq {
 
     private final Object lock = new Object();
 
-    // todo 测试并发的安全问题
-    // todo 测试 synchronized 和 cas 哪个性能更加好
     @Override
     public boolean send(CmqMessage<?> message) {
-        if (offsetWriteable.get() > capacity || message == null) {
+        if (message == null) {
+            return false;
+        }
+        if (offsetWriteable.get() > capacity) {
+            log.error("the [topic: {}] queue is full,the capacity is {}",getTopic(),capacity);
             return false;
         }
         MessageNode node = new MessageNode();
@@ -65,17 +70,20 @@ public class HashMapQueueCmq implements Cmq {
 
     @Override
     public CmqMessage<?> pollNow(String consumer) {
-        long readOffset = readOffsetMap.computeIfAbsent(consumer, k -> offsetWriteable.get() - 1);
+        long readOffset = getReadOffset(consumer);
         if (readOffset < 0) {
             return null;
         }
         MessageNode node = queue.get(readOffset);
+        if (node != null) {
+            pollCountMap.put(consumer, pollCountMap.getOrDefault(consumer, 0) + 1);
+        }
         return node == null ? null : node.getMessage();
     }
 
     @Override
     public List<CmqMessage<?>> pollNow(String consumer, int count) {
-        long readOffset = readOffsetMap.computeIfAbsent(consumer, k -> offsetWriteable.get() - 1);
+        long readOffset = getReadOffset(consumer);
         if (readOffset < 0) {
             return Collections.emptyList();
         }
@@ -85,7 +93,18 @@ public class HashMapQueueCmq implements Cmq {
             list.add(curr.getMessage());
             curr = curr.getNext();
         }
-        return ImmutableList.copyOf(list);
+        List<CmqMessage<?>> result = ImmutableList.copyOf(list);
+        pollCountMap.put(consumer, pollCountMap.getOrDefault(consumer, 0) + result.size());
+        return result;
+    }
+
+    private long getReadOffset(String consumer) {
+        long readOffset = readOffsetMap.computeIfAbsent(consumer, k -> offsetWriteable.get() - 1);
+        if (readOffset < 0 && offsetWriteable.get() > 0) {
+            readOffset = 0;
+            readOffsetMap.put(consumer, 0L);
+        }
+        return readOffset;
     }
 
     @Override
@@ -106,6 +125,16 @@ public class HashMapQueueCmq implements Cmq {
         }
         pollCountMap.remove(consumer);
         readOffsetMap.put(consumer, offset);
+    }
+
+    @Override
+    public long getOffset(String consumer) {
+        return readOffsetMap.getOrDefault(consumer, -1L);
+    }
+
+    @Override
+    public long getMqOffset() {
+        return offsetWriteable.get() - 1;
     }
 
     @Override

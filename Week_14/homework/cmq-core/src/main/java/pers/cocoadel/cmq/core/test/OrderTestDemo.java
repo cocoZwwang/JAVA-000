@@ -1,20 +1,41 @@
 package pers.cocoadel.cmq.core.test;
 
 import lombok.SneakyThrows;
+import pers.cocoadel.cmq.core.broker.AbstractCmqBroker;
 import pers.cocoadel.cmq.core.broker.CmqBroker;
 import pers.cocoadel.cmq.core.consumer.CmqConsumer;
 import pers.cocoadel.cmq.core.message.CmqMessage;
 import pers.cocoadel.cmq.core.message.Describe;
 import pers.cocoadel.cmq.core.message.GenericCmqMessage;
 import pers.cocoadel.cmq.core.producer.CmqProducer;
-import pers.cocoadel.cmq.core.spi.ObjectFactory;
+import pers.cocoadel.cmq.core.spi.CmqBrokerFactory;
+import pers.cocoadel.cmq.core.spi.CmqConsumerFactory;
+import pers.cocoadel.cmq.core.spi.CmqFactory;
+import pers.cocoadel.cmq.core.spi.CmqProducerFactory;
 
 public class OrderTestDemo {
 
+    private static CmqBroker createCmqBroker() {
+        CmqBrokerFactory cmqBrokerFactory = CmqBrokerFactory.getInstance();
+        CmqBroker cmqBroker = cmqBrokerFactory.createCmqBroker();
+        if (cmqBroker instanceof AbstractCmqBroker) {
+            AbstractCmqBroker abstractCmqBroker = (AbstractCmqBroker) cmqBroker;
+            CmqConsumerFactory cmqConsumerFactory = CmqConsumerFactory.getInstance();
+            CmqProducerFactory cmqProducerFactory = CmqProducerFactory.getInstance();
+            CmqFactory cmqFactory = CmqFactory.getInstance();
+            abstractCmqBroker.setCmqFactory(cmqFactory);
+            abstractCmqBroker.setCmqConsumerFactory(cmqConsumerFactory);
+            abstractCmqBroker.setCmqProducerFactory(cmqProducerFactory);
+        }
+        return cmqBroker;
+    }
+
     @SneakyThrows
     public static void main(String[] args) {
+
+
         String topic = "kk.test";
-        CmqBroker broker = ObjectFactory.createObject(CmqBroker.class);
+        CmqBroker broker = createCmqBroker();
         if (broker == null) {
             throw new IllegalStateException("create broker fail");
         }
@@ -29,6 +50,7 @@ public class OrderTestDemo {
                 CmqMessage<Order> message = consumer.pollNow();
                 if(null != message) {
                     System.out.println(message.getBody());
+                    consumer.commit();
                 }
             }
             System.out.println("程序退出。");

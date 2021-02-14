@@ -16,8 +16,8 @@ public class ServerExchangeCmqConsumer extends ExchangeCmqConsumer<String> {
 
     @Override
     public void subscribe(ConsumerRequestBody requestBody) {
-        requestBody.check();
         try {
+            requestBody.check();
             Describe describe = requestBody.getDescribe();
             cmqBroker.createTopic(describe.getTopic());
             CmqConsumer<String> consumer = createConsumer(describe);
@@ -29,8 +29,8 @@ public class ServerExchangeCmqConsumer extends ExchangeCmqConsumer<String> {
 
     @Override
     public PollResponseBody poll(PollRequestBody requestBody) {
-        requestBody.check();
         try {
+            requestBody.check();
             //拉取消息
             List<GenericCmqMessage<String>> list = doPoll(requestBody);
             //构建 PollResponseBody
@@ -43,7 +43,6 @@ public class ServerExchangeCmqConsumer extends ExchangeCmqConsumer<String> {
     }
 
     private List<GenericCmqMessage<String>> doPoll(PollRequestBody requestBody) {
-        // todo 暂时先一次啦一条消息
         // todo 暂时还没处理 group id
         Describe describe = requestBody.getDescribe();
         CmqConsumer<String> consumer = createConsumer(describe);
@@ -57,9 +56,9 @@ public class ServerExchangeCmqConsumer extends ExchangeCmqConsumer<String> {
 
     @Override
     public void commit(ConsumerRequestBody requestBody) {
-        requestBody.check();
         //执行commit
         try {
+            requestBody.check();
             CmqConsumer<String> consumer = createConsumer(requestBody.getDescribe());
             consumer.commit();
         } catch (Exception e) {
