@@ -1,16 +1,15 @@
 package pers.cocoadel.cmq.server.netty.exchange;
 
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
+import pers.cocoadel.cmq.netty.comm.OperationType;
+import pers.cocoadel.cmq.server.netty.exchange.support.Exchange;
 
-public abstract class ExchangeHandler<I> extends SimpleChannelInboundHandler<I> {
+import java.util.Set;
 
-    public abstract boolean isMatch(I msg);
+public interface ExchangeHandler {
 
-    @Override
-    protected void channelRead0(ChannelHandlerContext ctx, I msg) throws Exception {
-        doChannelRead0(ctx, msg);
-    }
+    boolean isMatch(OperationType operationType);
 
-    public abstract void doChannelRead0(ChannelHandlerContext ctx, I msg) throws Exception;
+    Set<OperationType> supportOperationTypes();
+
+    void handle(Exchange exchange);
 }

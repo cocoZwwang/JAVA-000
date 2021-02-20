@@ -1,7 +1,9 @@
 package pers.cocoadel.cmq.client.netty;
 
 import com.alibaba.fastjson.JSON;
+import com.google.common.base.Throwables;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import pers.cocoadel.cmq.comm.request.SendTextRequestBody;
 import pers.cocoadel.cmq.core.message.CmqMessage;
 import pers.cocoadel.cmq.core.message.Describe;
@@ -14,6 +16,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+@Slf4j
 @Data
 public class NettyClientProducer implements CmqProducer {
 
@@ -34,7 +37,7 @@ public class NettyClientProducer implements CmqProducer {
             StreamResponse response = future.get(TIME_OUT, TimeUnit.MILLISECONDS);
             return response.isSuccessful();
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            e.printStackTrace();
+            log.error("send msg fail: " + Throwables.getStackTraceAsString(e));
         }
         return false;
     }

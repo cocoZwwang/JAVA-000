@@ -1,24 +1,20 @@
 package pers.cocoadel.cmq.core.mq;
 
-import com.google.common.collect.ImmutableList;
 import pers.cocoadel.cmq.core.message.CmqMessage;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 1）自定义内存Message数组模拟Queue。
  * 2）使用指针记录当前消息写入位置。
  * 3）对于每个命名消费者，用指针记录消费位置。
  */
-public class ArrayMessageCmq extends AbstractTopicCmq {
+public class ArrayMessageCmq implements RandomCmq {
     private CmqMessage<?>[] array;
 
     private int offsetWriteable = 0;
 
     private int maxCapacity;
-
-    private final Map<String, Long> consumerOffsetMap = new ConcurrentHashMap<>();
 
     public ArrayMessageCmq() {
 
@@ -49,40 +45,33 @@ public class ArrayMessageCmq extends AbstractTopicCmq {
 
     @Override
     public CmqMessage<?> pollNow(String consumer) {
-        int offsetRead = Math.toIntExact(consumerOffsetMap.computeIfAbsent(consumer, k -> 0L));
-        if (offsetRead >= offsetWriteable) {
+        if (offsetWriteable == 0) {
             return null;
         }
-        return array[offsetRead];
+        return array[offsetWriteable - 1];
+    }
+
+    @Override
+    public CmqMessage<?> read(int offset) {
+        if (offset < 0 || offset >= offsetWriteable) {
+            throw new IndexOutOfBoundsException(String.format("offset is < 0 || > %s ", offsetWriteable));
+        }
+        return array[offset];
     }
 
     @Override
     public List<CmqMessage<?>> pollNow(String consumer, int count) {
-        int offsetRead = Math.toIntExact(consumerOffsetMap.computeIfAbsent(consumer, k -> 0L));
-        if (offsetRead >= offsetWriteable) {
-            return Collections.emptyList();
-        }
-        List<CmqMessage<?>> list = Arrays.asList(array).subList(offsetRead, offsetWriteable);
-        return ImmutableList.copyOf(list);
+        return null;
     }
 
     @Override
     public void setOffset(String consumer, long offset) {
-        if (offset >= offsetWriteable) {
-            throw new IndexOutOfBoundsException("offset is out of size of messages");
-        }
-        if (!consumerOffsetMap.containsKey(consumer)) {
-            throw new NoSuchElementException(String.format("the consumer{%s} is not exist！", consumer));
-        }
-        consumerOffsetMap.put(consumer, offset);
+
     }
 
     @Override
     public long getOffset(String consumer) {
-        if (consumerOffsetMap.containsKey(consumer)) {
-            return consumerOffsetMap.get(consumer);
-        }
-        return -1;
+        return 0;
     }
 
     @Override
@@ -97,10 +86,6 @@ public class ArrayMessageCmq extends AbstractTopicCmq {
      */
     @Override
     public void commit(String consumer) {
-        if (consumerOffsetMap.containsKey(consumer)) {
-            if (consumerOffsetMap.get(consumer) < offsetWriteable) {
-                consumerOffsetMap.put(consumer, consumerOffsetMap.get(consumer) + 1);
-            }
-        }
+
     }
 }

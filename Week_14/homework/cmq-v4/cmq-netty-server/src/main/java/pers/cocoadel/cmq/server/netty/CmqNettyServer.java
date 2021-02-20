@@ -1,6 +1,5 @@
 package pers.cocoadel.cmq.server.netty;
 
-import com.google.common.collect.ImmutableList;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -11,23 +10,17 @@ import io.netty.handler.logging.LoggingHandler;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import pers.cocoadel.cmq.core.broker.AbstractCmqBroker;
 import pers.cocoadel.cmq.core.broker.CmqBroker;
-import pers.cocoadel.cmq.core.mq.AbstractTopicCmq;
 import pers.cocoadel.cmq.core.spi.CmqConsumerFactory;
 import pers.cocoadel.cmq.core.spi.CmqFactory;
 import pers.cocoadel.cmq.core.spi.CmqProducerFactory;
 import pers.cocoadel.cmq.core.spi.ObjectFactory;
 import pers.cocoadel.cmq.exchange.ServerExchangeCmqConsumer;
 import pers.cocoadel.cmq.exchange.ServerExchangeCmqProducer;
-import pers.cocoadel.cmq.netty.comm.StreamRequest;
 import pers.cocoadel.cmq.netty.comm.codec.CmqFrameDecoder;
 import pers.cocoadel.cmq.netty.comm.codec.CmqFrameEncoder;
 import pers.cocoadel.cmq.server.netty.codec.*;
-import pers.cocoadel.cmq.server.netty.exchange.DispatcherHandler;
-import pers.cocoadel.cmq.server.netty.exchange.ExchangeConsumerHandler;
-import pers.cocoadel.cmq.server.netty.exchange.ExchangeHandler;
-import pers.cocoadel.cmq.server.netty.exchange.ExchangeProducerHandler;
-
-import java.util.List;
+import pers.cocoadel.cmq.server.netty.exchange.support.DispatcherHandler;
+import pers.cocoadel.cmq.server.netty.exchange.support.ExchangeHandlerRegistry;
 
 public class CmqNettyServer {
     private final CmqBroker cmqBroker;
@@ -35,6 +28,8 @@ public class CmqNettyServer {
     private final ServerExchangeCmqProducer exchangeCmqProducer;
 
     private final ServerExchangeCmqConsumer exchangeCmqConsumer;
+
+    private final ExchangeHandlerRegistry exchangeHandlerRegistry;
 
     CmqNettyServer() {
         cmqBroker = ObjectFactory.createObject(CmqBroker.class);
@@ -48,6 +43,8 @@ public class CmqNettyServer {
         exchangeCmqConsumer.setCmqBroker(cmqBroker);
         exchangeCmqProducer = new ServerExchangeCmqProducer();
         exchangeCmqProducer.setBroker(cmqBroker);
+
+        exchangeHandlerRegistry = ExchangeHandlerRegistry.getInstance();
     }
 
 
@@ -82,11 +79,7 @@ public class CmqNettyServer {
                             //日志
                             pipeline.addLast("LoggingHandler", new LoggingHandler());
                             //消息服务处理
-                            DispatcherHandler dispatcherHandler = new DispatcherHandler();
-                            List<ExchangeHandler<StreamRequest<?>>> exchangeHandlers = ImmutableList.of(
-                                    new ExchangeConsumerHandler(exchangeCmqConsumer),
-                                    new ExchangeProducerHandler(exchangeCmqProducer));
-                            dispatcherHandler.setExchangeHandlers(exchangeHandlers);
+                            DispatcherHandler dispatcherHandler = new DispatcherHandler(exchangeHandlerRegistry);
                             pipeline.addLast("DispatcherHandler", dispatcherHandler);
 //                            pipeline.addLast("ExchangeConsumerHandler", new ExchangeConsumerHandler(exchangeCmqConsumer));
 //                            pipeline.addLast("ExchangeProducerHandler", new ExchangeProducerHandler(exchangeCmqProducer));

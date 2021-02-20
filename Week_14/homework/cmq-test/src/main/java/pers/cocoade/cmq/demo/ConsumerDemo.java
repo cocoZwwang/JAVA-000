@@ -32,7 +32,6 @@ public class ConsumerDemo {
                     } else {
                         TimeUnit.MILLISECONDS.sleep(500);
                     }
-                    TimeUnit.MILLISECONDS.sleep(500);
                 } catch (Exception e) {
                     e.printStackTrace();
                     TimeUnit.MILLISECONDS.sleep(500);
